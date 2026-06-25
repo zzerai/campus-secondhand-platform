@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrTradeOrderLogMapper">
+    
+    <resultMap type="TrTradeOrderLog" id="TrTradeOrderLogResult">
+        <result property="logId"    column="log_id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="operatorId"    column="operator_id"    />
+        <result property="operatorType"    column="operator_type"    />
+        <result property="beforeStatus"    column="before_status"    />
+        <result property="afterStatus"    column="after_status"    />
+        <result property="operationType"    column="operation_type"    />
+        <result property="operationContent"    column="operation_content"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrTradeOrderLogVo">
+        select log_id, order_id, operator_id, operator_type, before_status, after_status, operation_type, operation_content, create_by, create_time, update_by, update_time, del_flag, remark from tr_trade_order_log
+    </sql>
+
+    <select id="selectTrTradeOrderLogList" parameterType="TrTradeOrderLog" resultMap="TrTradeOrderLogResult">
+        <include refid="selectTrTradeOrderLogVo"/>
+        <where>
+            del_flag = '0'
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="operatorId != null "> and operator_id = #{operatorId}</if>
+            <if test="operatorType != null  and operatorType != ''"> and operator_type = #{operatorType}</if>
+            <if test="beforeStatus != null  and beforeStatus != ''"> and before_status = #{beforeStatus}</if>
+            <if test="afterStatus != null  and afterStatus != ''"> and after_status = #{afterStatus}</if>
+            <if test="operationType != null  and operationType != ''"> and operation_type = #{operationType}</if>
+            <if test="operationContent != null  and operationContent != ''"> and operation_content = #{operationContent}</if>
+        </where>
+    </select>
+    
+    <select id="selectTrTradeOrderLogByLogId" parameterType="Long" resultMap="TrTradeOrderLogResult">
+        <include refid="selectTrTradeOrderLogVo"/>
+        where log_id = #{logId} and del_flag = '0'
+    </select>
+
+    <insert id="insertTrTradeOrderLog" parameterType="TrTradeOrderLog" useGeneratedKeys="true" keyProperty="logId">
+        insert into tr_trade_order_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">order_id,</if>
+            <if test="operatorId != null">operator_id,</if>
+            <if test="operatorType != null">operator_type,</if>
+            <if test="beforeStatus != null">before_status,</if>
+            <if test="afterStatus != null">after_status,</if>
+            <if test="operationType != null">operation_type,</if>
+            <if test="operationContent != null">operation_content,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">#{orderId},</if>
+            <if test="operatorId != null">#{operatorId},</if>
+            <if test="operatorType != null">#{operatorType},</if>
+            <if test="beforeStatus != null">#{beforeStatus},</if>
+            <if test="afterStatus != null">#{afterStatus},</if>
+            <if test="operationType != null">#{operationType},</if>
+            <if test="operationContent != null">#{operationContent},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrTradeOrderLog" parameterType="TrTradeOrderLog">
+        update tr_trade_order_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="operatorId != null">operator_id = #{operatorId},</if>
+            <if test="operatorType != null">operator_type = #{operatorType},</if>
+            <if test="beforeStatus != null">before_status = #{beforeStatus},</if>
+            <if test="afterStatus != null">after_status = #{afterStatus},</if>
+            <if test="operationType != null">operation_type = #{operationType},</if>
+            <if test="operationContent != null">operation_content = #{operationContent},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where log_id = #{logId}
+    </update>
+
+    <update id="deleteTrTradeOrderLogByLogId" parameterType="Long">
+        update tr_trade_order_log set del_flag = '2', update_time = sysdate() where log_id = #{logId}
+    </update>
+
+    <update id="deleteTrTradeOrderLogByLogIds" parameterType="String">
+        update tr_trade_order_log set del_flag = '2', update_time = sysdate() where log_id in
+        <foreach item="logId" collection="array" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+    </update>
+</mapper>

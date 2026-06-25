@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrTradeReportMapper">
+    
+    <resultMap type="TrTradeReport" id="TrTradeReportResult">
+        <result property="reportId"    column="report_id"    />
+        <result property="goodsId"    column="goods_id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="reportUserId"    column="report_user_id"    />
+        <result property="reportedUserId"    column="reported_user_id"    />
+        <result property="reportType"    column="report_type"    />
+        <result property="reportContent"    column="report_content"    />
+        <result property="evidenceImages"    column="evidence_images"    />
+        <result property="handleStatus"    column="handle_status"    />
+        <result property="handleUserId"    column="handle_user_id"    />
+        <result property="handleTime"    column="handle_time"    />
+        <result property="handleResult"    column="handle_result"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrTradeReportVo">
+        select report_id, goods_id, order_id, report_user_id, reported_user_id, report_type, report_content, evidence_images, handle_status, handle_user_id, handle_time, handle_result, create_by, create_time, update_by, update_time, del_flag, remark from tr_trade_report
+    </sql>
+
+    <select id="selectTrTradeReportList" parameterType="TrTradeReport" resultMap="TrTradeReportResult">
+        <include refid="selectTrTradeReportVo"/>
+        <where>
+            del_flag = '0'
+            <if test="goodsId != null "> and goods_id = #{goodsId}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="reportUserId != null "> and report_user_id = #{reportUserId}</if>
+            <if test="reportedUserId != null "> and reported_user_id = #{reportedUserId}</if>
+            <if test="reportType != null  and reportType != ''"> and report_type = #{reportType}</if>
+            <if test="reportContent != null  and reportContent != ''"> and report_content = #{reportContent}</if>
+            <if test="evidenceImages != null  and evidenceImages != ''"> and evidence_images = #{evidenceImages}</if>
+            <if test="handleStatus != null  and handleStatus != ''"> and handle_status = #{handleStatus}</if>
+            <if test="handleUserId != null "> and handle_user_id = #{handleUserId}</if>
+            <if test="handleTime != null "> and handle_time = #{handleTime}</if>
+            <if test="handleResult != null  and handleResult != ''"> and handle_result = #{handleResult}</if>
+        </where>
+    </select>
+    
+    <resultMap type="com.ruoyi.trade.domain.vo.AppReportVo" id="AppReportVoResult">
+        <result property="reportId"        column="report_id"        />
+        <result property="goodsId"         column="goods_id"         />
+        <result property="orderId"         column="order_id"         />
+        <result property="reportType"      column="report_type"      />
+        <result property="reportContent"   column="report_content"   />
+        <result property="evidenceImages"  column="evidence_images"  />
+        <result property="handleStatus"    column="handle_status"    />
+        <result property="handleTime"      column="handle_time"      />
+        <result property="handleResult"    column="handle_result"    />
+        <result property="createTime"      column="create_time"      />
+        <result property="goodsTitle"      column="goods_title"      />
+        <result property="goodsPrice"      column="goods_price"      />
+        <result property="goodsStatus"     column="goods_status"     />
+        <result property="goodsCoverImage" column="goods_cover_image"/>
+    </resultMap>
+
+    <!-- 移动端"我的举报"：联表回填商品标题/价格/封面/状态，按提交时间倒序 -->
+    <select id="selectAppReportVoListByUser" resultMap="AppReportVoResult">
+        select r.report_id, r.goods_id, r.order_id, r.report_type, r.report_content,
+               r.evidence_images, r.handle_status, r.handle_time, r.handle_result, r.create_time,
+               g.title as goods_title, g.price as goods_price, g.goods_status as goods_status,
+               (select i.image_url from tr_trade_goods_image i
+                  where i.goods_id = g.goods_id and i.del_flag = '0'
+                  order by i.sort asc, i.image_id asc limit 1) as goods_cover_image
+        from tr_trade_report r
+        left join tr_trade_goods g on g.goods_id = r.goods_id
+        where r.del_flag = '0' and r.report_user_id = #{reportUserId}
+        order by r.create_time desc
+    </select>
+
+    <select id="selectTrTradeReportByReportId" parameterType="Long" resultMap="TrTradeReportResult">
+        <include refid="selectTrTradeReportVo"/>
+        where report_id = #{reportId} and del_flag = '0'
+    </select>
+
+    <insert id="insertTrTradeReport" parameterType="TrTradeReport" useGeneratedKeys="true" keyProperty="reportId">
+        insert into tr_trade_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">goods_id,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="reportUserId != null">report_user_id,</if>
+            <if test="reportedUserId != null">reported_user_id,</if>
+            <if test="reportType != null and reportType != ''">report_type,</if>
+            <if test="reportContent != null">report_content,</if>
+            <if test="evidenceImages != null">evidence_images,</if>
+            <if test="handleStatus != null">handle_status,</if>
+            <if test="handleUserId != null">handle_user_id,</if>
+            <if test="handleTime != null">handle_time,</if>
+            <if test="handleResult != null">handle_result,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">#{goodsId},</if>
+            <if test="orderId != null">#{orderId},</if>
+            <if test="reportUserId != null">#{reportUserId},</if>
+            <if test="reportedUserId != null">#{reportedUserId},</if>
+            <if test="reportType != null and reportType != ''">#{reportType},</if>
+            <if test="reportContent != null">#{reportContent},</if>
+            <if test="evidenceImages != null">#{evidenceImages},</if>
+            <if test="handleStatus != null">#{handleStatus},</if>
+            <if test="handleUserId != null">#{handleUserId},</if>
+            <if test="handleTime != null">#{handleTime},</if>
+            <if test="handleResult != null">#{handleResult},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrTradeReport" parameterType="TrTradeReport">
+        update tr_trade_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="goodsId != null">goods_id = #{goodsId},</if>
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="reportUserId != null">report_user_id = #{reportUserId},</if>
+            <if test="reportedUserId != null">reported_user_id = #{reportedUserId},</if>
+            <if test="reportType != null and reportType != ''">report_type = #{reportType},</if>
+            <if test="reportContent != null">report_content = #{reportContent},</if>
+            <if test="evidenceImages != null">evidence_images = #{evidenceImages},</if>
+            <if test="handleStatus != null">handle_status = #{handleStatus},</if>
+            <if test="handleUserId != null">handle_user_id = #{handleUserId},</if>
+            <if test="handleTime != null">handle_time = #{handleTime},</if>
+            <if test="handleResult != null">handle_result = #{handleResult},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where report_id = #{reportId}
+    </update>
+
+    <update id="updateReportHandle">
+        update tr_trade_report
+        set handle_status = #{handleStatus},
+            handle_user_id = #{handleUserId},
+            handle_time   = #{handleTime},
+            handle_result = #{handleResult},
+            update_by     = #{updateBy},
+            update_time   = #{updateTime}
+        where report_id = #{reportId}
+          and del_flag = '0'
+    </update>
+
+    <update id="deleteTrTradeReportByReportId" parameterType="Long">
+        update tr_trade_report set del_flag = '2', update_time = sysdate() where report_id = #{reportId}
+    </update>
+
+    <update id="deleteTrTradeReportByReportIds" parameterType="String">
+        update tr_trade_report set del_flag = '2', update_time = sysdate() where report_id in
+        <foreach item="reportId" collection="array" open="(" separator="," close=")">
+            #{reportId}
+        </foreach>
+    </update>
+
+    <select id="selectPendingReportCount" resultType="long">
+        select count(1)
+        from tr_trade_report
+        where del_flag = '0'
+          and handle_status = '0'
+    </select>
+
+    <select id="countPendingByUserAndGoods" resultType="int">
+        select count(1)
+        from tr_trade_report
+        where del_flag = '0'
+          and report_user_id = #{reportUserId}
+          and goods_id = #{goodsId}
+          and handle_status = '0'
+    </select>
+</mapper>

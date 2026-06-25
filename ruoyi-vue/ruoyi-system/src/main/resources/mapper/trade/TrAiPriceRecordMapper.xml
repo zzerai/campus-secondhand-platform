@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrAiPriceRecordMapper">
+    
+    <resultMap type="TrAiPriceRecord" id="TrAiPriceRecordResult">
+        <result property="recordId"    column="record_id"    />
+        <result property="goodsId"    column="goods_id"    />
+        <result property="title"    column="title"    />
+        <result property="categoryName"    column="category_name"    />
+        <result property="quality"    column="quality"    />
+        <result property="description"    column="description"    />
+        <result property="suggestPrice"    column="suggest_price"    />
+        <result property="priceReason"    column="price_reason"    />
+        <result property="aiResult"    column="ai_result"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrAiPriceRecordVo">
+        select record_id, goods_id, title, category_name, quality, description, suggest_price, price_reason, ai_result, create_by, create_time, update_by, update_time, del_flag, remark from tr_ai_price_record
+    </sql>
+
+    <select id="selectTrAiPriceRecordList" parameterType="TrAiPriceRecord" resultMap="TrAiPriceRecordResult">
+        <include refid="selectTrAiPriceRecordVo"/>
+        <where>
+            del_flag = '0'
+            <if test="goodsId != null "> and goods_id = #{goodsId}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="categoryName != null  and categoryName != ''"> and category_name like concat('%', #{categoryName}, '%')</if>
+            <if test="quality != null  and quality != ''"> and quality = #{quality}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="suggestPrice != null "> and suggest_price = #{suggestPrice}</if>
+            <if test="priceReason != null  and priceReason != ''"> and price_reason = #{priceReason}</if>
+            <if test="aiResult != null  and aiResult != ''"> and ai_result = #{aiResult}</if>
+        </where>
+    </select>
+    
+    <select id="selectTrAiPriceRecordByRecordId" parameterType="Long" resultMap="TrAiPriceRecordResult">
+        <include refid="selectTrAiPriceRecordVo"/>
+        where record_id = #{recordId} and del_flag = '0'
+    </select>
+
+    <insert id="insertTrAiPriceRecord" parameterType="TrAiPriceRecord" useGeneratedKeys="true" keyProperty="recordId">
+        insert into tr_ai_price_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">goods_id,</if>
+            <if test="title != null">title,</if>
+            <if test="categoryName != null">category_name,</if>
+            <if test="quality != null">quality,</if>
+            <if test="description != null">description,</if>
+            <if test="suggestPrice != null">suggest_price,</if>
+            <if test="priceReason != null">price_reason,</if>
+            <if test="aiResult != null">ai_result,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">#{goodsId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="categoryName != null">#{categoryName},</if>
+            <if test="quality != null">#{quality},</if>
+            <if test="description != null">#{description},</if>
+            <if test="suggestPrice != null">#{suggestPrice},</if>
+            <if test="priceReason != null">#{priceReason},</if>
+            <if test="aiResult != null">#{aiResult},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrAiPriceRecord" parameterType="TrAiPriceRecord">
+        update tr_ai_price_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="goodsId != null">goods_id = #{goodsId},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="categoryName != null">category_name = #{categoryName},</if>
+            <if test="quality != null">quality = #{quality},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="suggestPrice != null">suggest_price = #{suggestPrice},</if>
+            <if test="priceReason != null">price_reason = #{priceReason},</if>
+            <if test="aiResult != null">ai_result = #{aiResult},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where record_id = #{recordId}
+    </update>
+
+    <update id="deleteTrAiPriceRecordByRecordId" parameterType="Long">
+        update tr_ai_price_record set del_flag = '2', update_time = sysdate() where record_id = #{recordId}
+    </update>
+
+    <update id="deleteTrAiPriceRecordByRecordIds" parameterType="String">
+        update tr_ai_price_record set del_flag = '2', update_time = sysdate() where record_id in
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </update>
+</mapper>

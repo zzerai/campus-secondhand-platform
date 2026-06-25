@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrStudentUserMapper">
+    
+    <resultMap type="TrStudentUser" id="TrStudentUserResult">
+        <result property="userId"    column="user_id"    />
+        <result property="studentNo"    column="student_no"    />
+        <result property="phone"    column="phone"    />
+        <result property="password"    column="password"    />
+        <result property="nickname"    column="nickname"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="contactWay"    column="contact_way"    />
+        <result property="creditScore"    column="credit_score"    />
+        <result property="status"    column="status"    />
+        <result property="lastLoginTime"    column="last_login_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrStudentUserVo">
+        select user_id, student_no, phone, password, nickname, avatar, contact_way, credit_score, status, last_login_time, create_by, create_time, update_by, update_time, del_flag, remark from tr_student_user
+    </sql>
+
+    <select id="selectTrStudentUserList" parameterType="TrStudentUser" resultMap="TrStudentUserResult">
+        <include refid="selectTrStudentUserVo"/>
+        <where>
+            and del_flag = '0'
+            <if test="studentNo != null  and studentNo != ''"> and student_no like concat('%', #{studentNo}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone like concat('%', #{phone}, '%')</if>
+            <if test="nickname != null  and nickname != ''"> and nickname like concat('%', #{nickname}, '%')</if>
+            <if test="contactWay != null  and contactWay != ''"> and contact_way = #{contactWay}</if>
+            <if test="creditScore != null "> and credit_score = #{creditScore}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="lastLoginTime != null "> and last_login_time = #{lastLoginTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectTrStudentUserByUserId" parameterType="Long" resultMap="TrStudentUserResult">
+        <include refid="selectTrStudentUserVo"/>
+        where user_id = #{userId} and del_flag = '0'
+    </select>
+
+    <select id="selectTrStudentUserByStudentNo" parameterType="String" resultMap="TrStudentUserResult">
+        <include refid="selectTrStudentUserVo"/>
+        where student_no = #{studentNo} and del_flag = '0'
+    </select>
+
+    <select id="selectTrStudentUserByPhone" parameterType="String" resultMap="TrStudentUserResult">
+        <include refid="selectTrStudentUserVo"/>
+        where phone = #{phone} and del_flag = '0'
+    </select>
+
+    <select id="checkStudentNoUnique" parameterType="String" resultMap="TrStudentUserResult">
+        <include refid="selectTrStudentUserVo"/>
+        where student_no = #{studentNo} and del_flag = '0' limit 1
+    </select>
+
+    <select id="checkPhoneUnique" parameterType="String" resultMap="TrStudentUserResult">
+        <include refid="selectTrStudentUserVo"/>
+        where phone = #{phone} and del_flag = '0' limit 1
+    </select>
+
+    <!--
+        全表查（不过滤 del_flag），用于注册前识别软删除占位行。
+        uk_student_no / uk_phone 是全表唯一索引，不带 del_flag 条件无法靠 unique key 复用。
+    -->
+    <select id="selectAnyByStudentNo" parameterType="String" resultMap="TrStudentUserResult">
+        <include refid="selectTrStudentUserVo"/>
+        where student_no = #{studentNo} limit 1
+    </select>
+
+    <select id="selectAnyByPhone" parameterType="String" resultMap="TrStudentUserResult">
+        <include refid="selectTrStudentUserVo"/>
+        where phone = #{phone} limit 1
+    </select>
+
+    <!--
+        复活软删除的学生用户：仅当 del_flag='2' 时生效，复活后重置 credit_score / status / last_login_time
+        以及 update_* 审计字段。一次 update 完成"清空旧痕迹 + 写入新注册信息"，避免脏数据残留。
+    -->
+    <update id="reviveStudentUser">
+        update tr_student_user
+        set student_no       = #{studentNo},
+            phone            = #{phone},
+            password         = #{password},
+            nickname         = #{nickname},
+            avatar           = null,
+            contact_way      = null,
+            credit_score     = 100,
+            status           = '0',
+            last_login_time  = null,
+            del_flag         = '0',
+            update_by        = #{updateBy},
+            update_time      = sysdate()
+        where user_id = #{userId} and del_flag = '2'
+    </update>
+
+    <insert id="insertTrStudentUser" parameterType="TrStudentUser" useGeneratedKeys="true" keyProperty="userId">
+        insert into tr_student_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentNo != null and studentNo != ''">student_no,</if>
+            <if test="phone != null">phone,</if>
+            <if test="password != null and password != ''">password,</if>
+            <if test="nickname != null">nickname,</if>
+            <if test="avatar != null">avatar,</if>
+            <if test="contactWay != null">contact_way,</if>
+            <if test="creditScore != null">credit_score,</if>
+            <if test="status != null">status,</if>
+            <if test="lastLoginTime != null">last_login_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="studentNo != null and studentNo != ''">#{studentNo},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="password != null and password != ''">#{password},</if>
+            <if test="nickname != null">#{nickname},</if>
+            <if test="avatar != null">#{avatar},</if>
+            <if test="contactWay != null">#{contactWay},</if>
+            <if test="creditScore != null">#{creditScore},</if>
+            <if test="status != null">#{status},</if>
+            <if test="lastLoginTime != null">#{lastLoginTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrStudentUser" parameterType="TrStudentUser">
+        update tr_student_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="studentNo != null and studentNo != ''">student_no = #{studentNo},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="contactWay != null">contact_way = #{contactWay},</if>
+            <if test="creditScore != null">credit_score = #{creditScore},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <update id="updateLastLoginTime">
+        update tr_student_user
+        set last_login_time = #{lastLoginTime}
+        where user_id = #{userId} and del_flag = '0'
+    </update>
+
+    <update id="deleteTrStudentUserByUserId" parameterType="Long">
+        update tr_student_user set del_flag = '2' where user_id = #{userId}
+    </update>
+
+    <update id="deleteTrStudentUserByUserIds" parameterType="String">
+        update tr_student_user set del_flag = '2' where user_id in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </update>
+
+    <select id="selectStudentUserTotalCount" resultType="long">
+        select count(1)
+        from tr_student_user
+        where del_flag = '0'
+    </select>
+
+    <select id="selectTodayNewUserCount" resultType="long">
+        select count(1)
+        from tr_student_user
+        where del_flag = '0'
+          and create_time <![CDATA[>=]]> curdate()
+          and create_time <![CDATA[<]]> curdate() + interval 1 day
+    </select>
+
+    <select id="selectStudentForUpdate" resultMap="TrStudentUserResult">
+        select user_id, credit_score, status
+        from tr_student_user
+        where user_id = #{userId} and del_flag = '0'
+        for update
+    </select>
+
+    <update id="updateCreditScore">
+        update tr_student_user
+        set credit_score = #{creditScore}, update_time = now(), update_by = 'system'
+        where user_id = #{userId} and del_flag = '0'
+    </update>
+
+    <update id="updateStatus">
+        update tr_student_user
+        set status = #{status}, update_time = now(), update_by = 'system'
+        where user_id = #{userId} and del_flag = '0'
+    </update>
+</mapper>

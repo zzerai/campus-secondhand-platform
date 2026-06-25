@@ -1,0 +1,72 @@
+######################################################################
+# OS
+.DS_Store
+Thumbs.db
+
+######################################################################
+# IDE & Editors
+.idea/
+.vscode/
+.claude/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+.hbuilderx/
+
+######################################################################
+# Java / Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.log
+*.xml.versionsBackup
+*.swp
+
+######################################################################
+# Node / Frontend
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+######################################################################
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+######################################################################
+# Testing & Coverage
+tests/**/coverage/
+tests/e2e/reports
+selenium-debug.log
+
+######################################################################
+# Unpackage (HBuilder)
+/unpackage/*
+
+######################################################################
+# Flutter（flutter-app/）
+# 注：flutter-app/.gitignore 用反向白名单（仅放行 lib/ test/ pubspec.yaml /
+# analysis_options.yaml），下方列表为根级"显式可读清单"+ 兜底，限定路径避免
+# 误伤其他模块的同名目录。
+flutter-app/.dart_tool/
+flutter-app/build/
+flutter-app/.flutter-plugins
+flutter-app/.flutter-plugins-dependencies
+flutter-app/pubspec.lock
+flutter-app/coverage/
+flutter-app/.packages
+flutter-app/.pub-cache/
+flutter-app/.pub/
+flutter-app/*.iml
+screens/
+index.html
+
+######################################################################
+# Local runtime/cache files
+.codex-temp/
+dump.rdb

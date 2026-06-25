@@ -1,0 +1,535 @@
+/* ============================================================
+   Campus Trade Admin · Design System
+   方向：清爽专业 SaaS —— "Ink & Emerald"
+   - 浅色画布 + 白色面板 + 深祖母绿主色（呼应二手循环 / 可持续）
+   - 圆角、柔和分层阴影、克制留白、清晰数据层级
+   说明：本文件在 index.scss 中最后 @use，覆盖 Element Plus 与
+        若依自带样式。仅做视觉重塑，不改动任何业务逻辑/结构。
+   ============================================================ */
+
+:root {
+  /* —— 品牌色 —— */
+  --ct-primary: #127C68;
+  --ct-primary-600: #0F6E5C;
+  --ct-primary-700: #0A5648;
+  --ct-primary-050: #E8F4F0;
+  --ct-primary-100: #D2EAE3;
+
+  /* —— 点缀色（图表 / 状态强调）—— */
+  --ct-amber:  #E0A33B;
+  --ct-coral:  #E5685F;
+  --ct-indigo: #5B83E8;
+  --ct-violet: #8A6FE0;
+
+  /* —— 中性墨色 —— */
+  --ct-ink:        #1A2430;
+  --ct-text:       #46515F;
+  --ct-text-2:     #6B7686;
+  --ct-text-muted: #97A1AE;
+
+  /* —— 画布与表面 —— */
+  --ct-bg:          #F4F6F8;
+  --ct-surface:     #FFFFFF;
+  --ct-surface-2:   #FAFBFC;
+  --ct-border:      #E4E9EE;
+  --ct-border-soft: #EDF0F4;
+
+  /* —— 圆角 —— */
+  --ct-radius-sm: 8px;
+  --ct-radius:    10px;
+  --ct-radius-lg: 14px;
+  --ct-radius-xl: 18px;
+
+  /* —— 分层阴影 —— */
+  --ct-shadow-xs: 0 1px 2px rgba(16, 24, 40, .05);
+  --ct-shadow-sm: 0 1px 2px rgba(16, 24, 40, .04), 0 2px 8px rgba(16, 24, 40, .05);
+  --ct-shadow-md: 0 2px 4px rgba(16, 24, 40, .04), 0 8px 24px rgba(16, 24, 40, .08);
+  --ct-shadow-lg: 0 12px 40px rgba(16, 24, 40, .14);
+
+  /* —— 字体 —— */
+  --ct-font: "Plus Jakarta Sans", "PingFang SC", "HarmonyOS Sans SC",
+             "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* ===== 映射 Element Plus 设计令牌（浅色）===== */
+  --el-color-primary: var(--ct-primary);
+  --el-color-success: #2BA471;
+  --el-color-warning: #E0A33B;
+  --el-color-danger:  #E5685F;
+  --el-color-error:   #E5685F;
+  --el-color-info:    #7C8696;
+
+  --el-border-radius-base:  10px;
+  --el-border-radius-small: 8px;
+  --el-border-radius-round: 999px;
+
+  --el-text-color-primary:     #1A2430;
+  --el-text-color-regular:     #46515F;
+  --el-text-color-secondary:   #6B7686;
+  --el-text-color-placeholder: #A2ACB8;
+
+  --el-border-color:             #DDE3E9;
+  --el-border-color-light:       #E4E9EE;
+  --el-border-color-lighter:     #EDF0F4;
+  --el-border-color-extra-light: #F2F5F8;
+  --el-border-color-hover:       #C7CFD8;
+
+  --el-fill-color:         #F1F4F7;
+  --el-fill-color-light:   #F6F8FA;
+  --el-fill-color-lighter: #FAFBFC;
+  --el-fill-color-blank:   #FFFFFF;
+
+  --el-bg-color:         #FFFFFF;
+  --el-bg-color-page:    #F4F6F8;
+  --el-bg-color-overlay: #FFFFFF;
+
+  --el-font-family: var(--ct-font);
+  --el-box-shadow-light:  var(--ct-shadow-sm);
+  --el-box-shadow:        var(--ct-shadow-md);
+
+  /* ===== 布局外壳变量（覆盖 variables.module.scss 浅色默认值）===== */
+  --sidebar-bg:        #FFFFFF;
+  --sidebar-text:      #46515F;
+  --sidebar-logo-text: #1A2430;
+  /* 专用悬浮底色——避开 variables.module.scss 中 :root --menu-hover(#263445) 的同级冲突 */
+  --ct-sidebar-hover:  #EAF0FA;
+  --menu-active-text:  var(--ct-primary);
+
+  --navbar-bg:   #FFFFFF;
+  --navbar-text: #1A2430;
+}
+
+/* ============================================================
+   全局基底
+   ============================================================ */
+body {
+  font-family: var(--ct-font);
+  color: var(--ct-text);
+  background: var(--ct-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-main {
+  background: var(--ct-bg);
+}
+
+/* 数字使用等宽，价格/统计更整齐 */
+.el-table .cell,
+.pagination-container,
+.el-statistic__number {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 内容区留白 */
+.app-container {
+  padding: 18px 20px 8px;
+}
+
+/* ============================================================
+   卡片 / 面板
+   ============================================================ */
+.el-card {
+  border: 1px solid var(--ct-border-soft);
+  border-radius: var(--ct-radius-lg);
+  box-shadow: var(--ct-shadow-xs);
+  transition: box-shadow .25s ease, transform .25s ease;
+}
+.el-card.is-hover-shadow:hover,
+.el-card.is-always-shadow {
+  box-shadow: var(--ct-shadow-sm);
+}
+.el-card__header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--ct-border-soft);
+  font-weight: 600;
+  color: var(--ct-ink);
+}
+.el-card__body {
+  padding: 20px;
+}
+
+/* 搜索表单 —— 化为独立白色面板 */
+.app-container > .el-form--inline {
+  background: var(--ct-surface);
+  border: 1px solid var(--ct-border-soft);
+  border-radius: var(--ct-radius-lg);
+  box-shadow: var(--ct-shadow-xs);
+  padding: 18px 18px 2px;
+  margin-bottom: 14px;
+}
+.app-container > .el-form--inline .el-form-item {
+  margin-bottom: 16px;
+}
+/* 搜索表单标签按内容自适应宽度且不换行——
+   RuoYi 生成的搜索表单固定 label-width(68/80/88px)，长于此的标签
+   （如"父级分类ID"）会折成两行；改为 auto 宽度即可单行显示。*/
+.app-container > .el-form--inline .el-form-item__label {
+  width: auto !important;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   按钮
+   ============================================================ */
+.el-button {
+  border-radius: var(--ct-radius-sm);
+  font-weight: 500;
+  letter-spacing: .2px;
+  transition: all .2s ease;
+}
+.el-button--large {
+  border-radius: var(--ct-radius);
+}
+.el-button--primary {
+  --el-button-bg-color: var(--ct-primary);
+  --el-button-border-color: var(--ct-primary);
+  --el-button-hover-bg-color: var(--ct-primary-600);
+  --el-button-hover-border-color: var(--ct-primary-600);
+  --el-button-active-bg-color: var(--ct-primary-600);
+  box-shadow: 0 1px 2px rgba(18, 124, 104, .25);
+}
+.el-button--primary:not(.is-plain):not(.is-text):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(18, 124, 104, .28);
+}
+.el-button.is-link,
+.el-button.is-text {
+  box-shadow: none;
+  transform: none;
+}
+
+/* ============================================================
+   表格 —— 卡片化、柔和表头
+   ============================================================ */
+.el-table {
+  --el-table-border-color: var(--ct-border-soft);
+  --el-table-header-bg-color: #F7F9FA;
+  --el-table-header-text-color: #56616E;
+  --el-table-row-hover-bg-color: var(--ct-primary-050);
+  border-radius: var(--ct-radius-lg);
+  font-size: 13.5px;
+}
+.app-container > .el-table {
+  border: 1px solid var(--ct-border-soft);
+  box-shadow: var(--ct-shadow-xs);
+  overflow: hidden;
+}
+.el-table th.el-table__cell {
+  background: var(--el-table-header-bg-color);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .2px;
+}
+.el-table td.el-table__cell,
+.el-table th.el-table__cell {
+  padding: 11px 0;
+}
+.el-table__cell .cell {
+  line-height: 1.6;
+}
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: #FBFCFD;
+}
+
+/* ============================================================
+   表单控件
+   ============================================================ */
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper {
+  border-radius: var(--ct-radius-sm);
+  box-shadow: 0 0 0 1px var(--ct-border) inset;
+  transition: box-shadow .2s ease;
+}
+.el-input__wrapper:hover,
+.el-select__wrapper:hover {
+  box-shadow: 0 0 0 1px var(--el-border-color-hover) inset;
+}
+.el-input__wrapper.is-focus,
+.el-select__wrapper.is-focused {
+  box-shadow: 0 0 0 1px var(--ct-primary) inset,
+              0 0 0 3px var(--ct-primary-050);
+}
+.el-radio-button__inner {
+  border-radius: 0;
+}
+
+/* ============================================================
+   标签 Tag
+   ============================================================ */
+.el-tag {
+  border-radius: 6px;
+  font-weight: 500;
+  border: none;
+}
+
+/* ============================================================
+   分页
+   ============================================================ */
+.pagination-container {
+  padding: 16px 2px 6px;
+  background: transparent;
+}
+.el-pagination.is-background .el-pager li {
+  border-radius: var(--ct-radius-sm);
+}
+
+/* ============================================================
+   弹窗 Dialog
+   ============================================================ */
+.el-dialog {
+  border-radius: var(--ct-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--ct-shadow-lg);
+  padding: 0;
+}
+.el-dialog__header {
+  margin: 0;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--ct-border-soft);
+}
+.el-dialog__title {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ct-ink);
+}
+.el-dialog__headerbtn {
+  top: 16px;
+  right: 16px;
+}
+.el-dialog__body {
+  padding: 22px;
+}
+.el-dialog__footer {
+  padding: 14px 22px;
+  border-top: 1px solid var(--ct-border-soft);
+}
+.el-descriptions__label {
+  font-weight: 500;
+}
+
+/* ============================================================
+   下拉菜单 / 弹层
+   ============================================================ */
+.el-dropdown-menu,
+.el-popper.is-light,
+.el-select__popper {
+  border-radius: var(--ct-radius) !important;
+}
+.el-dropdown-menu {
+  padding: 6px;
+}
+.el-dropdown-menu__item {
+  border-radius: var(--ct-radius-sm);
+  padding: 8px 14px;
+}
+
+/* ============================================================
+   面包屑（顶栏内）
+   ============================================================ */
+.el-breadcrumb {
+  font-size: 14px;
+}
+.el-breadcrumb__inner.is-link,
+.el-breadcrumb__inner a {
+  color: var(--ct-text-2);
+  font-weight: 400 !important;
+}
+.el-breadcrumb__item:last-child .el-breadcrumb__inner {
+  color: var(--ct-ink);
+  font-weight: 500;
+}
+
+/* ============================================================
+   标签页 TagsView —— 轻量胶囊
+   ============================================================ */
+.tags-view-container {
+  border-bottom: 1px solid var(--ct-border-soft);
+}
+
+/* ============================================================
+   侧边栏 —— 浅色，激活项胶囊
+   ============================================================ */
+#app .sidebar-container {
+  box-shadow: none;
+  border-right: 1px solid var(--ct-border-soft);
+}
+#app .sidebar-container.theme-light {
+  border-right: 1px solid var(--ct-border-soft);
+
+  .el-menu {
+    padding: 10px 12px;
+  }
+  .el-menu-item,
+  .el-sub-menu__title {
+    border-radius: var(--ct-radius-sm);
+    margin: 3px 0;
+    color: var(--ct-text);
+    font-size: 14px;
+  }
+  .el-menu-item:not(.is-active):hover,
+  .el-sub-menu__title:hover {
+    background: var(--ct-sidebar-hover) !important;
+    color: var(--ct-ink) !important;
+  }
+  .el-menu-item.is-active {
+    background: var(--ct-primary-050) !important;
+    color: var(--ct-primary) !important;
+    font-weight: 600;
+  }
+  .el-menu-item.is-active::before {
+    display: none;
+  }
+  /* 激活项左侧标记条 */
+  .el-menu-item.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 18px;
+    border-radius: 0 3px 3px 0;
+    background: var(--ct-primary);
+  }
+  .el-sub-menu.is-active > .el-sub-menu__title {
+    color: var(--ct-primary) !important;
+    font-weight: 600;
+  }
+  /* 子菜单底色随面板 */
+  .nest-menu .el-sub-menu > .el-sub-menu__title,
+  .el-sub-menu .el-menu-item {
+    background: transparent;
+    /* 覆盖 sidebar.scss 强制的 min-width:200px——它在带内边距(gutter)的
+       菜单里会撑出 176px 内容区被裁切，导致"操作日志/登录日志"文字显示不全 */
+    min-width: 0 !important;
+    &:hover { background: var(--ct-sidebar-hover) !important; }
+  }
+}
+
+/* 折叠态下内边距收窄，避免图标偏移 */
+#app .hideSidebar .sidebar-container .el-menu {
+  padding: 10px 6px;
+}
+
+/* ============================================================
+   滚动条
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #CDD5DE;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B4BEC9;
+  background-clip: content-box;
+}
+
+/* ============================================================
+   细节：链接、加载、消息
+   ============================================================ */
+.el-link.el-link--primary {
+  color: var(--ct-primary);
+}
+
+/* 价格数字：等宽、加重、品牌色 */
+.cell-price {
+  font-weight: 600;
+  color: var(--ct-primary);
+  font-variant-numeric: tabular-nums;
+}
+.el-message {
+  border-radius: var(--ct-radius);
+  box-shadow: var(--ct-shadow-md);
+}
+.el-loading-mask {
+  background-color: rgba(255, 255, 255, .7);
+  backdrop-filter: blur(1px);
+}
+
+/* ============================================================
+   暗色模式适配
+   说明：本设计系统在 :root 以「浅色」值映射了全部 --ct-* 调色板
+        及部分 Element Plus 令牌（填充/页面底/表面），并有少量硬编码
+        浅色值。base（variables.module.scss）的 html.dark 只覆盖了其中
+        一部分，故此处补齐：重定义 --ct-* 调色板 + base 未覆盖的 EP 令牌
+        + 修正硬编码浅色，保证 dark 模式切换正确。
+   ============================================================ */
+html.dark {
+  /* —— 墨色文字反相 —— */
+  --ct-ink:        #E7EBF0;
+  --ct-text:       #C6CDD6;
+  --ct-text-2:     #99A2AF;
+  --ct-text-muted: #79828F;
+
+  /* —— 画布与表面（对齐 base：页面 #141414 / 浮层 #1d1e1f）—— */
+  --ct-bg:          #141414;
+  --ct-surface:     #1D1E1F;
+  --ct-surface-2:   #232425;
+  --ct-border:      #383939;
+  --ct-border-soft: #2C2D2F;
+
+  /* —— 主色浅染：激活/悬浮底、输入聚焦环 —— */
+  --ct-primary-050: rgba(18, 124, 104, .18);
+  --ct-primary-100: rgba(18, 124, 104, .28);
+
+  /* —— 侧栏悬浮底（暗色）—— */
+  --ct-sidebar-hover: #2A2B2D;
+
+  /* —— 补齐 base dark 未覆盖的 Element Plus 令牌 —— */
+  --el-bg-color-page:            #141414;
+  --el-fill-color:               #1D1E1F;
+  --el-fill-color-light:         #1A1B1C;
+  --el-fill-color-lighter:       #1D1E1F;
+  --el-fill-color-extra-light:   #1A1B1C;
+  --el-fill-color-blank:         #141414;
+  --el-border-color-lighter:     #2C2D2F;
+  --el-border-color-extra-light: #262727;
+
+  /* —— 暗底阴影减弱，避免发灰 —— */
+  --ct-shadow-xs: 0 1px 2px rgba(0, 0, 0, .35);
+  --ct-shadow-sm: 0 1px 2px rgba(0, 0, 0, .3), 0 2px 8px rgba(0, 0, 0, .35);
+  --ct-shadow-md: 0 2px 4px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .45);
+  --ct-shadow-lg: 0 12px 40px rgba(0, 0, 0, .55);
+
+  /* 搜索表单面板跟随暗色表面 */
+  .app-container > .el-form--inline {
+    background: var(--ct-surface);
+    border-color: var(--ct-border-soft);
+  }
+
+  /* 修正硬编码浅色：条纹行 / 加载遮罩 / 滚动条 */
+  .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+    background: #1A1B1C;
+  }
+  .el-loading-mask {
+    background-color: rgba(20, 20, 20, .72);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #3A3B3D;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4A4B4D;
+    background-clip: content-box;
+  }
+
+  /* 侧栏（theme-light 在暗色下）：激活胶囊用半透明主色 + 主色文字 */
+  #app .sidebar-container.theme-light {
+    .el-menu-item.is-active {
+      background: var(--ct-primary-050) !important;
+      color: var(--el-color-primary) !important;
+    }
+    .el-menu-item:not(.is-active):hover,
+    .el-sub-menu__title:hover {
+      color: var(--ct-ink) !important;
+    }
+  }
+}

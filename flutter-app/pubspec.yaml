@@ -1,0 +1,32 @@
+name: flutter_app
+description: 校园二手闲置交易平台 - 商品上传Demo
+publish_to: 'none'
+version: 1.1.5+5
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  image_picker: ^1.0.0
+  cross_file: ^0.3.5+2
+  shared_preferences: ^2.2.0
+  webview_flutter: ^4.10.0
+  # 应用内更新（仅安卓 APK 侧载）：读当前版本号 / 落盘 / 调起系统安装器 / SHA-256 校验
+  package_info_plus: ^8.0.0
+  path_provider: ^2.1.0
+  open_filex: ^4.4.0
+  crypto: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logo.png
+    - assets/display.png
+    - assets/hidden.png

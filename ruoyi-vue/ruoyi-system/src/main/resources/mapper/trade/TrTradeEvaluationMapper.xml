@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrTradeEvaluationMapper">
+    
+    <resultMap type="TrTradeEvaluation" id="TrTradeEvaluationResult">
+        <result property="evaluationId"    column="evaluation_id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="fromUserId"    column="from_user_id"    />
+        <result property="toUserId"    column="to_user_id"    />
+        <result property="score"    column="score"    />
+        <result property="content"    column="content"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrTradeEvaluationVo">
+        select evaluation_id, order_id, from_user_id, to_user_id, score, content, create_by, create_time, update_by, update_time, del_flag, remark from tr_trade_evaluation
+    </sql>
+
+    <select id="selectTrTradeEvaluationList" parameterType="TrTradeEvaluation" resultMap="TrTradeEvaluationResult">
+        <include refid="selectTrTradeEvaluationVo"/>
+        <where>
+            del_flag = '0'
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="fromUserId != null "> and from_user_id = #{fromUserId}</if>
+            <if test="toUserId != null "> and to_user_id = #{toUserId}</if>
+            <if test="score != null "> and score = #{score}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+        </where>
+    </select>
+
+    <select id="selectTrTradeEvaluationByEvaluationId" parameterType="Long" resultMap="TrTradeEvaluationResult">
+        <include refid="selectTrTradeEvaluationVo"/>
+        where evaluation_id = #{evaluationId} and del_flag = '0'
+    </select>
+
+    <insert id="insertTrTradeEvaluation" parameterType="TrTradeEvaluation" useGeneratedKeys="true" keyProperty="evaluationId">
+        insert into tr_trade_evaluation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">order_id,</if>
+            <if test="fromUserId != null">from_user_id,</if>
+            <if test="toUserId != null">to_user_id,</if>
+            <if test="score != null">score,</if>
+            <if test="content != null">content,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">#{orderId},</if>
+            <if test="fromUserId != null">#{fromUserId},</if>
+            <if test="toUserId != null">#{toUserId},</if>
+            <if test="score != null">#{score},</if>
+            <if test="content != null">#{content},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrTradeEvaluation" parameterType="TrTradeEvaluation">
+        update tr_trade_evaluation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="fromUserId != null">from_user_id = #{fromUserId},</if>
+            <if test="toUserId != null">to_user_id = #{toUserId},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where evaluation_id = #{evaluationId}
+    </update>
+
+    <update id="deleteTrTradeEvaluationByEvaluationId" parameterType="Long">
+        update tr_trade_evaluation set del_flag = '2', update_time = sysdate() where evaluation_id = #{evaluationId}
+    </update>
+
+    <update id="deleteTrTradeEvaluationByEvaluationIds" parameterType="String">
+        update tr_trade_evaluation set del_flag = '2', update_time = sysdate() where evaluation_id in
+        <foreach item="evaluationId" collection="array" open="(" separator="," close=")">
+            #{evaluationId}
+        </foreach>
+    </update>
+
+    <select id="countByOrderAndFromUser" resultType="int">
+        select count(1)
+        from tr_trade_evaluation
+        where del_flag = '0'
+          and order_id = #{orderId}
+          and from_user_id = #{fromUserId}
+    </select>
+
+    <select id="selectReceivedByUserId" resultMap="AppEvaluationVoResult">
+        select e.evaluation_id, e.order_id, e.from_user_id, e.to_user_id,
+               e.score, e.content, e.create_time,
+               fu.nickname as from_user_name, fu.avatar as from_user_avatar,
+               tu.nickname as to_user_name, tu.avatar as to_user_avatar,
+               o.goods_title, o.goods_images, o.trade_price as goods_price
+        from tr_trade_evaluation e
+        left join tr_student_user fu on e.from_user_id = fu.user_id
+        left join tr_student_user tu on e.to_user_id = tu.user_id
+        left join tr_trade_order o on e.order_id = o.order_id
+        where e.del_flag = '0' and e.to_user_id = #{userId}
+        order by e.create_time desc
+    </select>
+
+    <select id="selectSentByUserId" resultMap="AppEvaluationVoResult">
+        select e.evaluation_id, e.order_id, e.from_user_id, e.to_user_id,
+               e.score, e.content, e.create_time,
+               fu.nickname as from_user_name, fu.avatar as from_user_avatar,
+               tu.nickname as to_user_name, tu.avatar as to_user_avatar,
+               o.goods_title, o.goods_images, o.trade_price as goods_price
+        from tr_trade_evaluation e
+        left join tr_student_user fu on e.from_user_id = fu.user_id
+        left join tr_student_user tu on e.to_user_id = tu.user_id
+        left join tr_trade_order o on e.order_id = o.order_id
+        where e.del_flag = '0' and e.from_user_id = #{userId}
+        order by e.create_time desc
+    </select>
+
+    <select id="scoreDistributionByUserId" resultType="java.util.HashMap">
+        select score, count(1) as cnt
+        from tr_trade_evaluation
+        where del_flag = '0' and to_user_id = #{userId}
+        group by score
+    </select>
+
+    <select id="avgScoreByUserId" resultType="java.math.BigDecimal">
+        select round(avg(score), 1)
+        from tr_trade_evaluation
+        where del_flag = '0' and to_user_id = #{userId}
+    </select>
+
+    <resultMap type="com.ruoyi.trade.domain.vo.AppEvaluationVo" id="AppEvaluationVoResult">
+        <result property="evaluationId"    column="evaluation_id"    />
+        <result property="orderId"         column="order_id"         />
+        <result property="fromUserId"      column="from_user_id"     />
+        <result property="fromUserName"    column="from_user_name"   />
+        <result property="fromUserAvatar"  column="from_user_avatar" />
+        <result property="toUserId"        column="to_user_id"       />
+        <result property="toUserName"      column="to_user_name"     />
+        <result property="toUserAvatar"    column="to_user_avatar"   />
+        <result property="score"           column="score"            />
+        <result property="content"         column="content"          />
+        <result property="goodsTitle"      column="goods_title"      />
+        <result property="goodsImages"     column="goods_images"     />
+        <result property="goodsPrice"      column="goods_price"      />
+        <result property="createTime"      column="create_time"      />
+    </resultMap>
+</mapper>

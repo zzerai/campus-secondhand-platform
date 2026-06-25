@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrAppVersionMapper">
+
+    <resultMap type="TrAppVersion" id="TrAppVersionResult">
+        <result property="versionId"    column="version_id"    />
+        <result property="versionName"    column="version_name"    />
+        <result property="versionCode"    column="version_code"    />
+        <result property="downloadUrl"    column="download_url"    />
+        <result property="fileSize"    column="file_size"    />
+        <result property="fileSha256"    column="file_sha256"    />
+        <result property="forceUpdate"    column="force_update"    />
+        <result property="updateLog"    column="update_log"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrAppVersionVo">
+        select version_id, version_name, version_code, download_url, file_size, file_sha256, force_update, update_log, status, create_by, create_time, update_by, update_time, del_flag, remark from tr_app_version
+    </sql>
+
+    <select id="selectTrAppVersionList" parameterType="TrAppVersion" resultMap="TrAppVersionResult">
+        <include refid="selectTrAppVersionVo"/>
+        <where>
+            <if test="versionName != null  and versionName != ''"> and version_name like concat('%', #{versionName}, '%')</if>
+            <if test="versionCode != null "> and version_code = #{versionCode}</if>
+            <if test="forceUpdate != null  and forceUpdate != ''"> and force_update = #{forceUpdate}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            and del_flag = '0'
+        </where>
+        order by version_code desc
+    </select>
+
+    <select id="selectTrAppVersionByVersionId" parameterType="Long" resultMap="TrAppVersionResult">
+        <include refid="selectTrAppVersionVo"/>
+        where version_id = #{versionId}
+    </select>
+
+    <!-- 移动端检测更新：仅启用(status='0')且未删除中 version_code 最大的一条 -->
+    <select id="selectLatestEnabledVersion" resultMap="TrAppVersionResult">
+        <include refid="selectTrAppVersionVo"/>
+        where status = '0' and del_flag = '0'
+        order by version_code desc
+        limit 1
+    </select>
+
+    <insert id="insertTrAppVersion" parameterType="TrAppVersion" useGeneratedKeys="true" keyProperty="versionId">
+        insert into tr_app_version
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="versionName != null and versionName != ''">version_name,</if>
+            <if test="versionCode != null">version_code,</if>
+            <if test="downloadUrl != null and downloadUrl != ''">download_url,</if>
+            <if test="fileSize != null">file_size,</if>
+            <if test="fileSha256 != null">file_sha256,</if>
+            <if test="forceUpdate != null">force_update,</if>
+            <if test="updateLog != null">update_log,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="versionName != null and versionName != ''">#{versionName},</if>
+            <if test="versionCode != null">#{versionCode},</if>
+            <if test="downloadUrl != null and downloadUrl != ''">#{downloadUrl},</if>
+            <if test="fileSize != null">#{fileSize},</if>
+            <if test="fileSha256 != null">#{fileSha256},</if>
+            <if test="forceUpdate != null">#{forceUpdate},</if>
+            <if test="updateLog != null">#{updateLog},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrAppVersion" parameterType="TrAppVersion">
+        update tr_app_version
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="versionName != null and versionName != ''">version_name = #{versionName},</if>
+            <if test="versionCode != null">version_code = #{versionCode},</if>
+            <if test="downloadUrl != null and downloadUrl != ''">download_url = #{downloadUrl},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            <if test="fileSha256 != null">file_sha256 = #{fileSha256},</if>
+            <if test="forceUpdate != null">force_update = #{forceUpdate},</if>
+            <if test="updateLog != null">update_log = #{updateLog},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where version_id = #{versionId}
+    </update>
+
+    <update id="deleteTrAppVersionByVersionId" parameterType="Long">
+        update tr_app_version set del_flag = '2' where version_id = #{versionId}
+    </update>
+
+    <update id="deleteTrAppVersionByVersionIds" parameterType="String">
+        update tr_app_version set del_flag = '2' where version_id in
+        <foreach item="versionId" collection="array" open="(" separator="," close=")">
+            #{versionId}
+        </foreach>
+    </update>
+</mapper>

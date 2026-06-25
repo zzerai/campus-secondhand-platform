@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrTradeGoodsMapper">
+
+    <resultMap type="TrTradeGoods" id="TrTradeGoodsResult">
+        <result property="goodsId"          column="goods_id"        />
+        <result property="sellerId"         column="seller_id"       />
+        <result property="categoryId"       column="category_id"     />
+        <result property="title"            column="title"           />
+        <result property="price"            column="price"           />
+        <result property="originalPrice"    column="original_price"  />
+        <result property="quality"          column="quality"         />
+        <result property="description"      column="description"     />
+        <result property="tradePlace"       column="trade_place"     />
+        <result property="contactWay"       column="contact_way"     />
+        <result property="goodsStatus"      column="goods_status"    />
+        <result property="auditUserId"      column="audit_user_id"   />
+        <result property="auditTime"        column="audit_time"      />
+        <result property="auditRemark"      column="audit_remark"    />
+        <result property="viewCount"        column="view_count"      />
+        <result property="favoriteCount"    column="favorite_count"  />
+        <result property="createBy"         column="create_by"       />
+        <result property="createTime"       column="create_time"     />
+        <result property="updateBy"         column="update_by"       />
+        <result property="updateTime"       column="update_time"     />
+        <result property="delFlag"          column="del_flag"        />
+        <result property="remark"           column="remark"          />
+        <result property="categoryName"     column="category_name"   />
+        <result property="sellerStudentNo"  column="seller_student_no"/>
+        <result property="sellerNickname"   column="seller_nickname" />
+        <result property="sellerAvatar"     column="seller_avatar"   />
+        <result property="auditUserName"    column="audit_user_name" />
+        <result property="imageUrls"        column="image_urls"      />
+    </resultMap>
+
+    <sql id="selectTrTradeGoodsJoinVo">
+        select g.goods_id, g.seller_id, g.category_id, g.title, g.price, g.original_price, g.quality,
+               g.description, g.trade_place, g.contact_way, g.goods_status, g.audit_user_id,
+               g.audit_time, g.audit_remark, g.view_count, g.favorite_count,
+               g.create_by, g.create_time, g.update_by, g.update_time, g.del_flag, g.remark,
+               c.category_name        as category_name,
+               s.student_no           as seller_student_no,
+               s.nickname             as seller_nickname,
+               s.avatar               as seller_avatar,
+               u.user_name            as audit_user_name
+        from tr_trade_goods g
+        left join tr_trade_category c on c.category_id = g.category_id and c.del_flag = '0'
+        left join tr_student_user   s on s.user_id     = g.seller_id   and s.del_flag = '0'
+        left join sys_user          u on u.user_id     = g.audit_user_id
+    </sql>
+
+    <select id="selectTrTradeGoodsList" parameterType="TrTradeGoods" resultMap="TrTradeGoodsResult">
+        <include refid="selectTrTradeGoodsJoinVo"/>
+        <where>
+            g.del_flag = '0'
+            <if test="sellerId != null ">                            and g.seller_id = #{sellerId}</if>
+            <if test="categoryId != null ">                          and g.category_id = #{categoryId}</if>
+            <if test="title != null and title != ''">                and g.title like concat('%', #{title}, '%')</if>
+            <if test="quality != null and quality != ''">            and g.quality = #{quality}</if>
+            <if test="goodsStatus != null and goodsStatus != ''">    and g.goods_status = #{goodsStatus}</if>
+            <if test="auditUserId != null ">                         and g.audit_user_id = #{auditUserId}</if>
+            <if test="sellerStudentNo != null and sellerStudentNo != ''">
+                and s.student_no like concat('%', #{sellerStudentNo}, '%')
+            </if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != ''">
+                and g.create_time &gt;= #{params.beginCreateTime}
+            </if>
+            <if test="params.endCreateTime != null and params.endCreateTime != ''">
+                and g.create_time &lt;= #{params.endCreateTime}
+            </if>
+        </where>
+        order by g.goods_id desc
+    </select>
+
+    <select id="selectTrTradeGoodsByGoodsId" parameterType="Long" resultMap="TrTradeGoodsResult">
+        <include refid="selectTrTradeGoodsJoinVo"/>
+        where g.goods_id = #{goodsId} and g.del_flag = '0'
+    </select>
+
+    <insert id="insertTrTradeGoods" parameterType="TrTradeGoods" useGeneratedKeys="true" keyProperty="goodsId">
+        insert into tr_trade_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sellerId != null">seller_id,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="price != null">price,</if>
+            <if test="originalPrice != null">original_price,</if>
+            <if test="quality != null">quality,</if>
+            <if test="description != null">description,</if>
+            <if test="tradePlace != null">trade_place,</if>
+            <if test="contactWay != null">contact_way,</if>
+            <if test="goodsStatus != null">goods_status,</if>
+            <if test="auditUserId != null">audit_user_id,</if>
+            <if test="auditTime != null">audit_time,</if>
+            <if test="auditRemark != null">audit_remark,</if>
+            <if test="viewCount != null">view_count,</if>
+            <if test="favoriteCount != null">favorite_count,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sellerId != null">#{sellerId},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="price != null">#{price},</if>
+            <if test="originalPrice != null">#{originalPrice},</if>
+            <if test="quality != null">#{quality},</if>
+            <if test="description != null">#{description},</if>
+            <if test="tradePlace != null">#{tradePlace},</if>
+            <if test="contactWay != null">#{contactWay},</if>
+            <if test="goodsStatus != null">#{goodsStatus},</if>
+            <if test="auditUserId != null">#{auditUserId},</if>
+            <if test="auditTime != null">#{auditTime},</if>
+            <if test="auditRemark != null">#{auditRemark},</if>
+            <if test="viewCount != null">#{viewCount},</if>
+            <if test="favoriteCount != null">#{favoriteCount},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTrTradeGoods" parameterType="TrTradeGoods">
+        update tr_trade_goods
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sellerId != null">seller_id = #{sellerId},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="originalPrice != null">original_price = #{originalPrice},</if>
+            <if test="quality != null">quality = #{quality},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="tradePlace != null">trade_place = #{tradePlace},</if>
+            <if test="contactWay != null">contact_way = #{contactWay},</if>
+            <if test="goodsStatus != null">goods_status = #{goodsStatus},</if>
+            <if test="auditUserId != null">audit_user_id = #{auditUserId},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+            <if test="auditRemark != null">audit_remark = #{auditRemark},</if>
+            <if test="viewCount != null">view_count = #{viewCount},</if>
+            <if test="favoriteCount != null">favorite_count = #{favoriteCount},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where goods_id = #{goodsId}
+    </update>
+
+    <update id="updateGoodsAudit">
+        update tr_trade_goods
+        set goods_status   = #{goodsStatus},
+            audit_user_id  = #{auditUserId},
+            audit_time     = #{auditTime},
+            audit_remark   = #{auditRemark},
+            update_by      = #{updateBy},
+            update_time    = #{updateTime}
+        where goods_id = #{goodsId}
+          and del_flag = '0'
+    </update>
+
+    <update id="updateGoodsStatus">
+        update tr_trade_goods
+        set goods_status = #{goodsStatus},
+            update_by    = #{updateBy},
+            update_time  = #{updateTime}
+        where goods_id = #{goodsId}
+          and del_flag = '0'
+    </update>
+
+    <update id="deleteTrTradeGoodsByGoodsId" parameterType="Long">
+        update tr_trade_goods set del_flag = '2', update_time = sysdate() where goods_id = #{goodsId}
+    </update>
+
+    <update id="deleteTrTradeGoodsByGoodsIds" parameterType="String">
+        update tr_trade_goods set del_flag = '2', update_time = sysdate() where goods_id in
+        <foreach item="goodsId" collection="array" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+    </update>
+
+    <select id="selectGoodsTotalCount" resultType="long">
+        select count(1)
+        from tr_trade_goods
+        where del_flag = '0'
+    </select>
+
+    <select id="selectPendingAuditGoodsCount" resultType="long">
+        select count(1)
+        from tr_trade_goods
+        where del_flag = '0'
+          and goods_status = '0'
+    </select>
+
+    <select id="selectOnShelfGoodsCount" resultType="long">
+        select count(1)
+        from tr_trade_goods
+        where del_flag = '0'
+          and goods_status = '1'
+    </select>
+
+    <select id="selectCategoryStatistics" resultType="com.ruoyi.trade.domain.vo.TrTradeStatisticsCategoryVo">
+        select c.category_id as categoryId,
+               c.category_name as categoryName,
+               count(distinct g.goods_id) as goodsCount,
+               count(distinct case when o.order_status = '3' and o.del_flag = '0' then o.order_id end) as completedOrderCount
+        from tr_trade_category c
+        left join tr_trade_goods g
+               on c.category_id = g.category_id
+              and g.del_flag = '0'
+              and g.goods_status in ('1', '4')
+        left join tr_trade_order o
+               on g.goods_id = o.goods_id
+              and o.del_flag = '0'
+        where c.del_flag = '0'
+        group by c.category_id, c.category_name, c.sort
+        order by c.sort asc, c.category_id asc
+    </select>
+
+    <select id="selectBySellerAndTitle" parameterType="map" resultType="TrTradeGoods">
+        select g.goods_id, g.seller_id, g.category_id, g.title, g.price, g.original_price, g.quality,
+               g.description, g.trade_place, g.contact_way, g.goods_status, g.audit_user_id,
+               g.audit_time, g.audit_remark, g.view_count, g.favorite_count,
+               g.create_by, g.create_time, g.update_by, g.update_time, g.del_flag, g.remark
+        from tr_trade_goods g
+        where g.del_flag = '0'
+          and g.seller_id = #{sellerId}
+          and g.title = #{title}
+        limit 1
+    </select>
+
+    <!-- ============================================================
+         以下为移动端业务所需方法（从 system.TradeGoodsMapper 合并）
+         ============================================================ -->
+
+    <!-- 移动端：含 sellerAvatar 与 image_urls 的列（卖家本人 / 已登录用户可见，含 contact_way） -->
+    <sql id="appGoodsCommonColumns">
+        g.goods_id, g.seller_id, g.category_id, g.title, g.price, g.original_price,
+        g.quality, g.description, g.trade_place, g.contact_way, g.goods_status,
+        g.audit_user_id, g.audit_time, g.audit_remark, g.view_count, g.favorite_count,
+        g.del_flag, g.create_by, g.create_time, g.update_by, g.update_time, g.remark,
+        s.student_no as seller_student_no,
+        s.nickname   as seller_nickname,
+        s.avatar     as seller_avatar,
+        c.category_name as category_name,
+        (select group_concat(i.image_url order by i.sort asc, i.image_id asc)
+           from tr_trade_goods_image i where i.goods_id = g.goods_id and i.del_flag = '0') as image_urls
+    </sql>
+
+    <!-- 移动端：匿名公开列（脱敏：剔除卖家学号、审核痕迹、del_flag、create_by/update_by、contact_way） -->
+    <sql id="appGoodsPublicColumns">
+        g.goods_id, g.seller_id, g.category_id, g.title, g.price, g.original_price,
+        g.quality, g.description, g.trade_place, g.goods_status,
+        g.view_count, g.favorite_count, g.create_time, g.update_time, g.remark,
+        s.nickname as seller_nickname,
+        s.avatar   as seller_avatar,
+        c.category_name as category_name,
+        (select group_concat(i.image_url order by i.sort asc, i.image_id asc)
+           from tr_trade_goods_image i where i.goods_id = g.goods_id and i.del_flag = '0') as image_urls
+    </sql>
+
+    <sql id="appGoodsJoins">
+        from tr_trade_goods g
+        left join tr_student_user s on s.user_id = g.seller_id and s.del_flag = '0'
+        left join tr_trade_category c on c.category_id = g.category_id and c.del_flag = '0'
+    </sql>
+
+    <!-- 行锁查询：仅锁本行，不连表 -->
+    <select id="selectTrTradeGoodsForUpdate" parameterType="Long" resultMap="TrTradeGoodsResult">
+        select goods_id, seller_id, category_id, title, price, original_price, quality,
+               description, trade_place, contact_way, goods_status, audit_user_id, audit_time,
+               audit_remark, view_count, favorite_count, del_flag, create_by, create_time,
+               update_by, update_time, remark
+        from tr_trade_goods
+        where goods_id = #{goodsId} and del_flag = '0'
+        for update
+    </select>
+
+    <!-- 移动端公开列表：仅返回已上架，支持 categoryId / keyword / sort -->
+    <select id="selectAppGoodsList" parameterType="TrTradeGoods" resultMap="TrTradeGoodsResult">
+        select <include refid="appGoodsPublicColumns"/>
+        <include refid="appGoodsJoins"/>
+        <where>
+            g.del_flag = '0'
+            and g.goods_status = '1'
+            <if test="sellerId != null">
+                and g.seller_id = #{sellerId}
+            </if>
+            <if test="categoryId != null">
+                and g.category_id = #{categoryId}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and (g.title like concat('%', #{keyword}, '%')
+                    or g.description like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="minPrice != null">
+                and g.price &gt;= #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                and g.price &lt;= #{maxPrice}
+            </if>
+        </where>
+        <choose>
+            <when test="sort == 'priceAsc'">order by g.price asc, g.goods_id desc</when>
+            <when test="sort == 'priceDesc'">order by g.price desc, g.goods_id desc</when>
+            <when test="sort == 'hot'">order by g.view_count desc, g.goods_id desc</when>
+            <otherwise>order by g.goods_id desc</otherwise>
+        </choose>
+    </select>
+
+    <!-- 卖家"我的商品"列表 -->
+    <select id="selectMyGoodsList" parameterType="TrTradeGoods" resultMap="TrTradeGoodsResult">
+        select <include refid="appGoodsCommonColumns"/>
+        <include refid="appGoodsJoins"/>
+        <where>
+            g.del_flag = '0'
+            and g.seller_id = #{sellerId}
+            <if test="goodsStatus != null and goodsStatus != ''">
+                and g.goods_status = #{goodsStatus}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and g.title like concat('%', #{keyword}, '%')
+            </if>
+        </where>
+        order by g.goods_id desc
+    </select>
+
+    <update id="increaseViewCountBy">
+        update tr_trade_goods set view_count = view_count + #{delta}
+        where goods_id = #{goodsId} and del_flag = '0'
+    </update>
+
+    <update id="increaseFavoriteCount" parameterType="Long">
+        update tr_trade_goods set favorite_count = favorite_count + 1
+        where goods_id = #{goodsId} and del_flag = '0'
+    </update>
+
+    <update id="decreaseFavoriteCount" parameterType="Long">
+        update tr_trade_goods set favorite_count = favorite_count - 1
+        where goods_id = #{goodsId} and del_flag = '0' and favorite_count &gt; 0
+    </update>
+
+    <update id="updateGoodsStatusByOwner">
+        update tr_trade_goods
+        set goods_status = #{goodsStatus}, update_time = sysdate()
+        where goods_id = #{goodsId} and seller_id = #{sellerId}
+          and goods_status = #{expectStatus} and del_flag = '0'
+    </update>
+
+    <update id="restoreSoldGoodsToOnSale">
+        update tr_trade_goods
+        set goods_status = #{onSaleStatus}, update_time = sysdate()
+        where goods_id = #{goodsId} and goods_status = #{soldStatus} and del_flag = '0'
+    </update>
+
+    <update id="deleteGoodsByOwner">
+        update tr_trade_goods
+        set del_flag = '2', update_time = sysdate()
+        where goods_id = #{goodsId} and seller_id = #{sellerId}
+          and goods_status in ('0', '1', '2', '3') and del_flag = '0'
+    </update>
+
+    <!-- 统计某卖家指定状态的在售/已售商品数（用户公开主页用） -->
+    <select id="countSellerGoodsByStatus" resultType="long">
+        select count(1)
+        from tr_trade_goods
+        where del_flag = '0'
+          and seller_id = #{sellerId}
+          and goods_status = #{goodsStatus}
+    </select>
+
+    <select id="selectGoodsImageUrls" parameterType="Long" resultType="java.lang.String">
+        select group_concat(image_url order by sort asc, image_id asc)
+        from tr_trade_goods_image
+        where goods_id = #{goodsId} and del_flag = '0'
+    </select>
+
+    <update id="deleteGoodsImagesByGoodsId" parameterType="Long">
+        update tr_trade_goods_image set del_flag = '2', update_time = sysdate()
+        where goods_id = #{goodsId} and del_flag = '0'
+    </update>
+
+    <insert id="batchInsertGoodsImages">
+        insert into tr_trade_goods_image (goods_id, image_url, sort, create_by, create_time)
+        values
+        <foreach collection="urls" item="url" index="idx" separator=",">
+            (#{goodsId}, #{url}, #{idx}, #{createBy}, sysdate())
+        </foreach>
+    </insert>
+</mapper>

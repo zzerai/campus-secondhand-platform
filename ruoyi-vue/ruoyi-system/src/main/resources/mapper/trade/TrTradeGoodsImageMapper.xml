@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrTradeGoodsImageMapper">
+    
+    <resultMap type="TrTradeGoodsImage" id="TrTradeGoodsImageResult">
+        <result property="imageId"    column="image_id"    />
+        <result property="goodsId"    column="goods_id"    />
+        <result property="imageUrl"    column="image_url"    />
+        <result property="sort"    column="sort"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrTradeGoodsImageVo">
+        select image_id, goods_id, image_url, sort, create_by, create_time, update_by, update_time, del_flag, remark from tr_trade_goods_image
+    </sql>
+
+    <select id="selectTrTradeGoodsImageList" parameterType="TrTradeGoodsImage" resultMap="TrTradeGoodsImageResult">
+        <include refid="selectTrTradeGoodsImageVo"/>
+        <where>
+            del_flag = '0'
+            <if test="goodsId != null "> and goods_id = #{goodsId}</if>
+            <if test="imageUrl != null  and imageUrl != ''"> and image_url = #{imageUrl}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+        </where>
+    </select>
+
+    <select id="selectTrTradeGoodsImageByImageId" parameterType="Long" resultMap="TrTradeGoodsImageResult">
+        <include refid="selectTrTradeGoodsImageVo"/>
+        where image_id = #{imageId} and del_flag = '0'
+    </select>
+
+    <insert id="insertTrTradeGoodsImage" parameterType="TrTradeGoodsImage" useGeneratedKeys="true" keyProperty="imageId">
+        insert into tr_trade_goods_image
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">goods_id,</if>
+            <if test="imageUrl != null and imageUrl != ''">image_url,</if>
+            <if test="sort != null">sort,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">#{goodsId},</if>
+            <if test="imageUrl != null and imageUrl != ''">#{imageUrl},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrTradeGoodsImage" parameterType="TrTradeGoodsImage">
+        update tr_trade_goods_image
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="goodsId != null">goods_id = #{goodsId},</if>
+            <if test="imageUrl != null and imageUrl != ''">image_url = #{imageUrl},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where image_id = #{imageId}
+    </update>
+
+    <update id="deleteTrTradeGoodsImageByImageId" parameterType="Long">
+        update tr_trade_goods_image set del_flag = '2', update_time = sysdate() where image_id = #{imageId}
+    </update>
+
+    <update id="deleteTrTradeGoodsImageByImageIds" parameterType="String">
+        update tr_trade_goods_image set del_flag = '2', update_time = sysdate() where image_id in
+        <foreach item="imageId" collection="array" open="(" separator="," close=")">
+            #{imageId}
+        </foreach>
+    </update>
+</mapper>

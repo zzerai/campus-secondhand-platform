@@ -1,0 +1,20 @@
+# 忽略所有内容
+*
+
+# 仅取消忽略以下源代码
+!lib/
+!lib/**/*
+!test/
+!test/**/*
+!pubspec.yaml
+!analysis_options.yaml
+!.gitignore
+!assets/
+!assets/**/*
+!fonts/
+!fonts/**/*
+!README.md
+
+# IDE 文件
+.idea/
+*.iml

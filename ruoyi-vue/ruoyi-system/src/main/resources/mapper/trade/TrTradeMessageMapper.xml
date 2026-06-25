@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrTradeMessageMapper">
+    
+    <resultMap type="TrTradeMessage" id="TrTradeMessageResult">
+        <result property="messageId"    column="message_id"    />
+        <result property="goodsId"    column="goods_id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="senderId"    column="sender_id"    />
+        <result property="receiverId"    column="receiver_id"    />
+        <result property="content"    column="content"    />
+        <result property="readStatus"    column="read_status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrTradeMessageVo">
+        select message_id, goods_id, order_id, sender_id, receiver_id, content, read_status, create_by, create_time, update_by, update_time, del_flag, remark from tr_trade_message
+    </sql>
+
+    <select id="selectTrTradeMessageList" parameterType="TrTradeMessage" resultMap="TrTradeMessageResult">
+        <include refid="selectTrTradeMessageVo"/>
+        <where>
+            del_flag = '0'
+            <if test="goodsId != null "> and goods_id = #{goodsId}</if>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="senderId != null "> and sender_id = #{senderId}</if>
+            <if test="receiverId != null "> and receiver_id = #{receiverId}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="readStatus != null  and readStatus != ''"> and read_status = #{readStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectTrTradeMessageByMessageId" parameterType="Long" resultMap="TrTradeMessageResult">
+        <include refid="selectTrTradeMessageVo"/>
+        where message_id = #{messageId} and del_flag = '0'
+    </select>
+
+    <insert id="insertTrTradeMessage" parameterType="TrTradeMessage" useGeneratedKeys="true" keyProperty="messageId">
+        insert into tr_trade_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">goods_id,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="senderId != null">sender_id,</if>
+            <if test="receiverId != null">receiver_id,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="readStatus != null">read_status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">#{goodsId},</if>
+            <if test="orderId != null">#{orderId},</if>
+            <if test="senderId != null">#{senderId},</if>
+            <if test="receiverId != null">#{receiverId},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="readStatus != null">#{readStatus},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrTradeMessage" parameterType="TrTradeMessage">
+        update tr_trade_message
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="goodsId != null">goods_id = #{goodsId},</if>
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="senderId != null">sender_id = #{senderId},</if>
+            <if test="receiverId != null">receiver_id = #{receiverId},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="readStatus != null">read_status = #{readStatus},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where message_id = #{messageId}
+    </update>
+
+    <update id="deleteTrTradeMessageByMessageId" parameterType="Long">
+        update tr_trade_message set del_flag = '2', update_time = sysdate() where message_id = #{messageId}
+    </update>
+
+    <update id="deleteTrTradeMessageByMessageIds" parameterType="String">
+        update tr_trade_message set del_flag = '2', update_time = sysdate() where message_id in
+        <foreach item="messageId" collection="array" open="(" separator="," close=")">
+            #{messageId}
+        </foreach>
+    </update>
+
+    <!-- ============================================================
+         移动端：按商品维度聚合的会话列表
+         ============================================================ -->
+
+    <resultMap type="com.ruoyi.trade.domain.vo.AppConversationVo" id="AppConversationResult">
+        <result property="peerId"          column="peer_id"           />
+        <result property="peerNickname"    column="peer_nickname"     />
+        <result property="peerAvatar"      column="peer_avatar"       />
+        <result property="goodsId"         column="goods_id"          />
+        <result property="goodsTitle"      column="goods_title"       />
+        <result property="goodsCoverImage" column="goods_cover_image" />
+        <result property="goodsStatus"     column="goods_status"      />
+        <result property="lastContent"     column="last_content"      />
+        <result property="lastSenderId"    column="last_sender_id"    />
+        <result property="lastTime"        column="last_time"         />
+        <result property="unreadCount"     column="unread_count"      />
+        <result property="orderId"        column="order_id"          />
+    </resultMap>
+
+    <!--
+        聚合策略：先按 (peer, goods) 取最新 message_id 作为会话锚点，
+        再 join 学生用户/商品/最新消息拿展示字段，最后 LEFT JOIN 子查询累加未读数。
+        仅纳入 goods_id 非空的消息；不引入会话表，依赖现有索引 idx_sender_id / idx_receiver_id / idx_goods_id。
+    -->
+    <select id="selectConversations" resultMap="AppConversationResult">
+        select
+            c.peer_id                             as peer_id,
+            u.nickname                            as peer_nickname,
+            u.avatar                              as peer_avatar,
+            c.goods_id                            as goods_id,
+            g.title                               as goods_title,
+            (select i.image_url
+               from tr_trade_goods_image i
+              where i.goods_id = c.goods_id and i.del_flag = '0'
+              order by i.sort asc, i.image_id asc
+              limit 1)                            as goods_cover_image,
+            g.goods_status                        as goods_status,
+            m.content                             as last_content,
+            m.sender_id                           as last_sender_id,
+            c.last_time                           as last_time,
+            coalesce(unread.cnt, 0)               as unread_count,
+            (select o.order_id
+               from tr_trade_order o
+              where o.goods_id = c.goods_id
+                and ((o.buyer_id = #{meId} and o.seller_id = c.peer_id)
+                  or (o.seller_id = #{meId} and o.buyer_id = c.peer_id))
+                and o.del_flag = '0'
+              order by o.create_time desc
+              limit 1)                            as order_id
+        from (
+            select
+                case when sender_id = #{meId} then receiver_id else sender_id end as peer_id,
+                goods_id,
+                max(message_id)   as last_message_id,
+                max(create_time)  as last_time
+            from tr_trade_message
+            where del_flag = '0'
+              and (sender_id = #{meId} or receiver_id = #{meId})
+              and goods_id is not null
+            group by peer_id, goods_id
+        ) c
+        join tr_trade_message m on m.message_id = c.last_message_id
+        join tr_student_user u  on u.user_id    = c.peer_id  and u.del_flag = '0'
+        join tr_trade_goods g   on g.goods_id   = c.goods_id and g.del_flag = '0'
+        left join (
+            select sender_id as peer_id, goods_id, count(*) as cnt
+            from tr_trade_message
+            where del_flag = '0'
+              and receiver_id = #{meId}
+              and read_status = '0'
+              and goods_id is not null
+            group by sender_id, goods_id
+        ) unread on unread.peer_id = c.peer_id and unread.goods_id = c.goods_id
+        order by c.last_time desc
+    </select>
+
+    <!-- ============================================================
+         移动端：单会话消息历史（按 create_time 倒序，前端反向渲染）
+         ============================================================ -->
+
+    <resultMap type="com.ruoyi.trade.domain.vo.AppMessageVo" id="AppMessageResult">
+        <result property="messageId"  column="message_id"  />
+        <result property="senderId"   column="sender_id"   />
+        <result property="receiverId" column="receiver_id" />
+        <result property="content"    column="content"     />
+        <result property="readStatus" column="read_status" />
+        <result property="createTime" column="create_time" />
+        <!-- mine 字段由 Service 层按 senderId == meId 计算，XML 不参与映射 -->
+    </resultMap>
+
+    <select id="selectConversationMessages" resultMap="AppMessageResult">
+        select message_id, sender_id, receiver_id, content, read_status, create_time
+        from tr_trade_message
+        where del_flag = '0'
+          and goods_id = #{goodsId}
+          and (
+                (sender_id = #{meId}   and receiver_id = #{peerId})
+             or (sender_id = #{peerId} and receiver_id = #{meId})
+          )
+        order by create_time desc
+    </select>
+
+    <!-- ============================================================
+         移动端：标记会话已读 / 未读总数
+         ============================================================ -->
+
+    <update id="markConversationAsRead">
+        update tr_trade_message
+        set read_status = '1',
+            update_by   = #{updateBy},
+            update_time = sysdate()
+        where del_flag    = '0'
+          and receiver_id = #{meId}
+          and sender_id   = #{peerId}
+          and goods_id    = #{goodsId}
+          and read_status = '0'
+    </update>
+
+    <select id="selectTrTradeMessageByMessageIds" resultMap="TrTradeMessageResult">
+        <include refid="selectTrTradeMessageVo"/>
+        where message_id in
+        <foreach item="messageId" collection="messageIds" open="(" separator="," close=")">
+            #{messageId}
+        </foreach>
+        and del_flag = '0'
+    </select>
+
+    <!-- ============================================================
+         管理端：管理员会话列表（goods_id=0）
+         ============================================================ -->
+
+    <resultMap type="com.ruoyi.trade.domain.vo.AppConversationVo" id="AdminContactConversationResult" extends="AppConversationResult"/>
+
+    <select id="selectAdminContactConversations" resultMap="AdminContactConversationResult">
+        select
+            c.peer_id                             as peer_id,
+            u.nickname                            as peer_nickname,
+            u.avatar                              as peer_avatar,
+            0                                     as goods_id,
+            '管理员咨询'                            as goods_title,
+            null                                  as goods_cover_image,
+            null                                  as goods_status,
+            m.content                             as last_content,
+            m.sender_id                           as last_sender_id,
+            c.last_time                           as last_time,
+            coalesce(unread.cnt, 0)               as unread_count,
+            null                                  as order_id
+        from (
+            select
+                case when sender_id = #{adminId} then receiver_id else sender_id end as peer_id,
+                max(message_id)   as last_message_id,
+                max(create_time)  as last_time
+            from tr_trade_message
+            where del_flag = '0'
+              and goods_id = 0
+              and (sender_id = #{adminId} or receiver_id = #{adminId})
+            group by peer_id
+        ) c
+        join tr_trade_message m on m.message_id = c.last_message_id
+        join tr_student_user u  on u.user_id    = c.peer_id  and u.del_flag = '0'
+        left join (
+            select sender_id as peer_id, count(*) as cnt
+            from tr_trade_message
+            where del_flag = '0'
+              and receiver_id = #{adminId}
+              and read_status = '0'
+              and goods_id = 0
+            group by sender_id
+        ) unread on unread.peer_id = c.peer_id
+        order by c.last_time desc
+    </select>
+
+    <select id="countUnread" resultType="long">
+        select count(*)
+        from tr_trade_message
+        where del_flag    = '0'
+          and receiver_id = #{meId}
+          and read_status = '0'
+    </select>
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrTradeDisputeMapper">
+    
+    <resultMap type="TrTradeDispute" id="TrTradeDisputeResult">
+        <result property="disputeId"    column="dispute_id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="goodsId"    column="goods_id"    />
+        <result property="applicantId"    column="applicant_id"    />
+        <result property="respondentId"    column="respondent_id"    />
+        <result property="disputeType"    column="dispute_type"    />
+        <result property="disputeContent"    column="dispute_content"    />
+        <result property="evidenceImages"    column="evidence_images"    />
+        <result property="aiAnalysis"    column="ai_analysis"    />
+        <result property="handleStatus"    column="handle_status"    />
+        <result property="handleUserId"    column="handle_user_id"    />
+        <result property="handleTime"    column="handle_time"    />
+        <result property="handleResult"    column="handle_result"    />
+        <result property="faultParty"    column="fault_party"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrTradeDisputeVo">
+        select dispute_id, order_id, goods_id, applicant_id, respondent_id, dispute_type, dispute_content, evidence_images, ai_analysis, handle_status, handle_user_id, handle_time, handle_result, fault_party, create_by, create_time, update_by, update_time, del_flag, remark from tr_trade_dispute
+    </sql>
+
+    <select id="selectTrTradeDisputeList" parameterType="TrTradeDispute" resultMap="TrTradeDisputeResult">
+        <include refid="selectTrTradeDisputeVo"/>
+        <where>
+            del_flag = '0'
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="goodsId != null "> and goods_id = #{goodsId}</if>
+            <if test="applicantId != null "> and applicant_id = #{applicantId}</if>
+            <if test="respondentId != null "> and respondent_id = #{respondentId}</if>
+            <if test="disputeType != null  and disputeType != ''"> and dispute_type = #{disputeType}</if>
+            <if test="disputeContent != null  and disputeContent != ''"> and dispute_content = #{disputeContent}</if>
+            <if test="evidenceImages != null  and evidenceImages != ''"> and evidence_images = #{evidenceImages}</if>
+            <if test="aiAnalysis != null  and aiAnalysis != ''"> and ai_analysis = #{aiAnalysis}</if>
+            <if test="handleStatus != null  and handleStatus != ''"> and handle_status = #{handleStatus}</if>
+            <if test="handleUserId != null "> and handle_user_id = #{handleUserId}</if>
+            <if test="handleTime != null "> and handle_time = #{handleTime}</if>
+            <if test="handleResult != null  and handleResult != ''"> and handle_result = #{handleResult}</if>
+        </where>
+    </select>
+    
+    <select id="selectTrTradeDisputeByDisputeId" parameterType="Long" resultMap="TrTradeDisputeResult">
+        <include refid="selectTrTradeDisputeVo"/>
+        where dispute_id = #{disputeId} and del_flag = '0'
+    </select>
+
+    <insert id="insertTrTradeDispute" parameterType="TrTradeDispute" useGeneratedKeys="true" keyProperty="disputeId">
+        insert into tr_trade_dispute
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">order_id,</if>
+            <if test="goodsId != null">goods_id,</if>
+            <if test="applicantId != null">applicant_id,</if>
+            <if test="respondentId != null">respondent_id,</if>
+            <if test="disputeType != null">dispute_type,</if>
+            <if test="disputeContent != null">dispute_content,</if>
+            <if test="evidenceImages != null">evidence_images,</if>
+            <if test="aiAnalysis != null">ai_analysis,</if>
+            <if test="handleStatus != null">handle_status,</if>
+            <if test="handleUserId != null">handle_user_id,</if>
+            <if test="handleTime != null">handle_time,</if>
+            <if test="handleResult != null">handle_result,</if>
+            <if test="faultParty != null">fault_party,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">#{orderId},</if>
+            <if test="goodsId != null">#{goodsId},</if>
+            <if test="applicantId != null">#{applicantId},</if>
+            <if test="respondentId != null">#{respondentId},</if>
+            <if test="disputeType != null">#{disputeType},</if>
+            <if test="disputeContent != null">#{disputeContent},</if>
+            <if test="evidenceImages != null">#{evidenceImages},</if>
+            <if test="aiAnalysis != null">#{aiAnalysis},</if>
+            <if test="handleStatus != null">#{handleStatus},</if>
+            <if test="handleUserId != null">#{handleUserId},</if>
+            <if test="handleTime != null">#{handleTime},</if>
+            <if test="handleResult != null">#{handleResult},</if>
+            <if test="faultParty != null">#{faultParty},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrTradeDispute" parameterType="TrTradeDispute">
+        update tr_trade_dispute
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="goodsId != null">goods_id = #{goodsId},</if>
+            <if test="applicantId != null">applicant_id = #{applicantId},</if>
+            <if test="respondentId != null">respondent_id = #{respondentId},</if>
+            <if test="disputeType != null">dispute_type = #{disputeType},</if>
+            <if test="disputeContent != null">dispute_content = #{disputeContent},</if>
+            <if test="evidenceImages != null">evidence_images = #{evidenceImages},</if>
+            <if test="aiAnalysis != null">ai_analysis = #{aiAnalysis},</if>
+            <if test="handleStatus != null">handle_status = #{handleStatus},</if>
+            <if test="handleUserId != null">handle_user_id = #{handleUserId},</if>
+            <if test="handleTime != null">handle_time = #{handleTime},</if>
+            <if test="handleResult != null">handle_result = #{handleResult},</if>
+            <if test="faultParty != null">fault_party = #{faultParty},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where dispute_id = #{disputeId}
+    </update>
+
+    <update id="updateDisputeHandle">
+        update tr_trade_dispute
+        set handle_status = #{handleStatus},
+            handle_user_id = #{handleUserId},
+            handle_time   = #{handleTime},
+            handle_result = #{handleResult},
+            fault_party   = #{faultParty},
+            update_by     = #{updateBy},
+            update_time   = #{updateTime}
+        where dispute_id = #{disputeId}
+          and del_flag = '0'
+          and handle_status &lt;&gt; '3'
+    </update>
+
+    <update id="updateAiAnalysisIfPending">
+        update tr_trade_dispute
+        <set>
+            ai_analysis = #{aiAnalysis},
+            <if test="handleStatus != null">handle_status = #{handleStatus},</if>
+            update_time = sysdate()
+        </set>
+        where dispute_id = #{disputeId}
+          and del_flag = '0'
+          and handle_status = '0'
+    </update>
+
+    <update id="deleteTrTradeDisputeByDisputeId" parameterType="Long">
+        update tr_trade_dispute set del_flag = '2', update_time = sysdate() where dispute_id = #{disputeId}
+    </update>
+
+    <update id="deleteTrTradeDisputeByDisputeIds" parameterType="String">
+        update tr_trade_dispute set del_flag = '2', update_time = sysdate() where dispute_id in
+        <foreach item="disputeId" collection="array" open="(" separator="," close=")">
+            #{disputeId}
+        </foreach>
+    </update>
+
+    <select id="selectTrTradeDisputeByUserId" parameterType="Long" resultMap="TrTradeDisputeResult">
+        <include refid="selectTrTradeDisputeVo"/>
+        where del_flag = '0'
+          and (applicant_id = #{userId} or respondent_id = #{userId})
+        order by create_time desc
+    </select>
+
+    <select id="selectPendingDisputeCount" resultType="long">
+        select count(1)
+        from tr_trade_dispute
+        where del_flag = '0'
+          and handle_status in ('0', '1')
+    </select>
+</mapper>

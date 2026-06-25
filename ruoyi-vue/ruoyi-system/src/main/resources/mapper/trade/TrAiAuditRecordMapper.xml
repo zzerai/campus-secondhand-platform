@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrAiAuditRecordMapper">
+    
+    <resultMap type="TrAiAuditRecord" id="TrAiAuditRecordResult">
+        <result property="recordId"    column="record_id"    />
+        <result property="businessId"    column="business_id"    />
+        <result property="businessType"    column="business_type"    />
+        <result property="inputContent"    column="input_content"    />
+        <result property="aiResult"    column="ai_result"    />
+        <result property="riskLevel"    column="risk_level"    />
+        <result property="suggestion"    column="suggestion"    />
+        <result property="riskReason"    column="risk_reason"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrAiAuditRecordVo">
+        select record_id, business_id, business_type, input_content, ai_result, risk_level, suggestion, risk_reason, create_by, create_time, update_by, update_time, del_flag, remark from tr_ai_audit_record
+    </sql>
+
+    <select id="selectTrAiAuditRecordList" parameterType="TrAiAuditRecord" resultMap="TrAiAuditRecordResult">
+        <include refid="selectTrAiAuditRecordVo"/>
+        <where>
+            del_flag = '0'
+            <if test="businessId != null "> and business_id = #{businessId}</if>
+            <if test="businessType != null  and businessType != ''"> and business_type = #{businessType}</if>
+            <if test="inputContent != null  and inputContent != ''"> and input_content = #{inputContent}</if>
+            <if test="aiResult != null  and aiResult != ''"> and ai_result = #{aiResult}</if>
+            <if test="riskLevel != null  and riskLevel != ''"> and risk_level = #{riskLevel}</if>
+            <if test="suggestion != null  and suggestion != ''"> and suggestion = #{suggestion}</if>
+            <if test="riskReason != null  and riskReason != ''"> and risk_reason = #{riskReason}</if>
+        </where>
+    </select>
+    
+    <select id="selectTrAiAuditRecordByRecordId" parameterType="Long" resultMap="TrAiAuditRecordResult">
+        <include refid="selectTrAiAuditRecordVo"/>
+        where record_id = #{recordId} and del_flag = '0'
+    </select>
+
+    <insert id="insertTrAiAuditRecord" parameterType="TrAiAuditRecord" useGeneratedKeys="true" keyProperty="recordId">
+        insert into tr_ai_audit_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="businessId != null">business_id,</if>
+            <if test="businessType != null">business_type,</if>
+            <if test="inputContent != null">input_content,</if>
+            <if test="aiResult != null">ai_result,</if>
+            <if test="riskLevel != null">risk_level,</if>
+            <if test="suggestion != null">suggestion,</if>
+            <if test="riskReason != null">risk_reason,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="businessId != null">#{businessId},</if>
+            <if test="businessType != null">#{businessType},</if>
+            <if test="inputContent != null">#{inputContent},</if>
+            <if test="aiResult != null">#{aiResult},</if>
+            <if test="riskLevel != null">#{riskLevel},</if>
+            <if test="suggestion != null">#{suggestion},</if>
+            <if test="riskReason != null">#{riskReason},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrAiAuditRecord" parameterType="TrAiAuditRecord">
+        update tr_ai_audit_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="businessId != null">business_id = #{businessId},</if>
+            <if test="businessType != null">business_type = #{businessType},</if>
+            <if test="inputContent != null">input_content = #{inputContent},</if>
+            <if test="aiResult != null">ai_result = #{aiResult},</if>
+            <if test="riskLevel != null">risk_level = #{riskLevel},</if>
+            <if test="suggestion != null">suggestion = #{suggestion},</if>
+            <if test="riskReason != null">risk_reason = #{riskReason},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where record_id = #{recordId}
+    </update>
+
+    <update id="deleteTrAiAuditRecordByRecordId" parameterType="Long">
+        update tr_ai_audit_record set del_flag = '2', update_time = sysdate() where record_id = #{recordId}
+    </update>
+
+    <update id="deleteTrAiAuditRecordByRecordIds" parameterType="String">
+        update tr_ai_audit_record set del_flag = '2', update_time = sysdate() where record_id in
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </update>
+</mapper>

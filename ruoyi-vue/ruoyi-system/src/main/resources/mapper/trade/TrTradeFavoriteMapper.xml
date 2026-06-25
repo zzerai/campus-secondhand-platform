@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrTradeFavoriteMapper">
+    
+    <resultMap type="TrTradeFavorite" id="TrTradeFavoriteResult">
+        <result property="favoriteId"    column="favorite_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="goodsId"    column="goods_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrTradeFavoriteVo">
+        select favorite_id, user_id, goods_id, create_by, create_time, update_by, update_time, del_flag, remark from tr_trade_favorite
+    </sql>
+
+    <select id="selectTrTradeFavoriteList" parameterType="TrTradeFavorite" resultMap="TrTradeFavoriteResult">
+        <include refid="selectTrTradeFavoriteVo"/>
+        <where>
+            del_flag = '0'
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="goodsId != null "> and goods_id = #{goodsId}</if>
+        </where>
+    </select>
+
+    <select id="selectTrTradeFavoriteByFavoriteId" parameterType="Long" resultMap="TrTradeFavoriteResult">
+        <include refid="selectTrTradeFavoriteVo"/>
+        where favorite_id = #{favoriteId} and del_flag = '0'
+    </select>
+
+    <insert id="insertTrTradeFavorite" parameterType="TrTradeFavorite" useGeneratedKeys="true" keyProperty="favoriteId">
+        insert into tr_trade_favorite
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="goodsId != null">goods_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="goodsId != null">#{goodsId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrTradeFavorite" parameterType="TrTradeFavorite">
+        update tr_trade_favorite
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="goodsId != null">goods_id = #{goodsId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where favorite_id = #{favoriteId}
+    </update>
+
+    <update id="deleteTrTradeFavoriteByFavoriteId" parameterType="Long">
+        update tr_trade_favorite set del_flag = '2', update_time = sysdate() where favorite_id = #{favoriteId}
+    </update>
+
+    <update id="deleteTrTradeFavoriteByFavoriteIds" parameterType="String">
+        update tr_trade_favorite set del_flag = '2', update_time = sysdate() where favorite_id in
+        <foreach item="favoriteId" collection="array" open="(" separator="," close=")">
+            #{favoriteId}
+        </foreach>
+    </update>
+
+    <!--
+        移动端"取消收藏"：按 (user_id, goods_id) 软删除当前活跃的收藏行，幂等；
+        仅对 del_flag='0' 的行生效，避免对已软删行重复 update。
+    -->
+    <update id="softDeleteByUserAndGoods">
+        update tr_trade_favorite
+        set del_flag = '2', update_by = #{updateBy}, update_time = sysdate()
+        where user_id = #{userId} and goods_id = #{goodsId} and del_flag = '0'
+    </update>
+
+    <select id="existsFavorite" resultType="int">
+        select count(1) from tr_trade_favorite
+        where user_id = #{userId} and goods_id = #{goodsId} and del_flag = '0'
+    </select>
+
+    <!--
+        "我的收藏"列表：联表查商品/分类/卖家，仅过滤被卖家软删的商品；
+        前端可根据 goodsStatus 展示"已下架/已售出"提示。
+    -->
+    <select id="selectMyFavoriteGoods" resultType="com.ruoyi.trade.domain.TrTradeGoods">
+        select g.goods_id        as goodsId,
+               g.seller_id       as sellerId,
+               g.category_id     as categoryId,
+               g.title           as title,
+               g.price           as price,
+               g.original_price  as originalPrice,
+               g.quality         as quality,
+               g.description     as description,
+               g.trade_place     as tradePlace,
+               g.goods_status    as goodsStatus,
+               g.view_count      as viewCount,
+               g.favorite_count  as favoriteCount,
+               g.create_time     as createTime,
+               g.update_time     as updateTime,
+               c.category_name   as categoryName,
+               s.nickname        as sellerNickname,
+               s.avatar          as sellerAvatar,
+               (select group_concat(i.image_url order by i.sort asc, i.image_id asc)
+                  from tr_trade_goods_image i where i.goods_id = g.goods_id and i.del_flag = '0') as imageUrls
+        from tr_trade_favorite f
+        inner join tr_trade_goods g     on g.goods_id = f.goods_id and g.del_flag = '0'
+        left  join tr_trade_category c  on c.category_id = g.category_id
+        left  join tr_student_user s    on s.user_id = g.seller_id
+        where f.user_id = #{userId} and f.del_flag = '0'
+        order by f.update_time desc, f.favorite_id desc
+    </select>
+
+    <!--
+        软删除 + uk_user_goods(user_id, goods_id) 唯一键冲突的修复：
+        新增收藏 → 命中 uk 时把现有行 del_flag 复活为 '0'、刷新 update_*；
+        返回值差异化在 service 层另用 existsFavorite 判断，本 SQL 不保证返回 1/2。
+    -->
+    <insert id="upsertFavorite">
+        insert into tr_trade_favorite (user_id, goods_id, create_by, create_time, update_by, update_time, del_flag)
+        values (#{userId}, #{goodsId}, #{createBy}, sysdate(), #{createBy}, sysdate(), '0')
+        on duplicate key update
+            del_flag = '0',
+            update_by = #{createBy},
+            update_time = sysdate()
+    </insert>
+</mapper>

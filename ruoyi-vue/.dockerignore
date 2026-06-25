@@ -1,0 +1,12 @@
+# 构建产物与本地文件，避免污染镜像构建上下文
+**/target/
+**/*.iml
+.idea/
+.vscode/
+# 不要把本地密钥带进镜像（生产 .env 通过 compose 挂载）
+**/.env
+!**/.env.example
+*.log
+logs/
+.git/
+.gitignore

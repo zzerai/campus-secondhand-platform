@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrTradeAnnouncementMapper">
+    
+    <resultMap type="TrTradeAnnouncement" id="TrTradeAnnouncementResult">
+        <result property="announcementId"    column="announcement_id"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="type"    column="type"    />
+        <result property="isTop"    column="is_top"    />
+        <result property="publishStatus"    column="publish_status"    />
+        <result property="publishTime"    column="publish_time"    />
+        <result property="coverImage"    column="cover_image"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTrTradeAnnouncementVo">
+        select announcement_id, title, content, type, is_top, publish_status, publish_time, cover_image, create_by, create_time, update_by, update_time, del_flag, remark from tr_trade_announcement
+    </sql>
+
+    <select id="selectTrTradeAnnouncementList" parameterType="TrTradeAnnouncement" resultMap="TrTradeAnnouncementResult">
+        <include refid="selectTrTradeAnnouncementVo"/>
+        <where>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="content != null  and content != ''"> and content like concat('%', #{content}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="isTop != null  and isTop != ''"> and is_top = #{isTop}</if>
+            <!-- 默认只查询未删除的公告 -->
+            and del_flag = '0'
+            <!-- 如果没有指定publishStatus，查询所有状态（包括草稿和已发布） -->
+            <if test="publishStatus != null  and publishStatus != ''">
+                and publish_status = #{publishStatus}
+            </if>
+            <if test="publishTime != null "> and publish_time = #{publishTime}</if>
+            <if test="coverImage != null  and coverImage != ''"> and cover_image = #{coverImage}</if>
+        </where>
+        order by is_top desc, publish_time desc
+    </select>
+    
+    <select id="selectTrTradeAnnouncementByAnnouncementId" parameterType="Long" resultMap="TrTradeAnnouncementResult">
+        <include refid="selectTrTradeAnnouncementVo"/>
+        where announcement_id = #{announcementId}
+    </select>
+
+    <insert id="insertTrTradeAnnouncement" parameterType="TrTradeAnnouncement" useGeneratedKeys="true" keyProperty="announcementId">
+        insert into tr_trade_announcement
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">title,</if>
+            <if test="content != null">content,</if>
+            <if test="type != null">type,</if>
+            <if test="isTop != null">is_top,</if>
+            <if test="publishStatus != null">publish_status,</if>
+            <if test="publishTime != null">publish_time,</if>
+            <if test="coverImage != null">cover_image,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="type != null">#{type},</if>
+            <if test="isTop != null">#{isTop},</if>
+            <if test="publishStatus != null">#{publishStatus},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+            <if test="coverImage != null">#{coverImage},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrTradeAnnouncement" parameterType="TrTradeAnnouncement">
+        update tr_trade_announcement
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="isTop != null">is_top = #{isTop},</if>
+            <if test="publishStatus != null">publish_status = #{publishStatus},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="coverImage != null">cover_image = #{coverImage},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where announcement_id = #{announcementId}
+    </update>
+
+    <update id="deleteTrTradeAnnouncementByAnnouncementId" parameterType="Long">
+        update tr_trade_announcement set del_flag = '2' where announcement_id = #{announcementId}
+    </update>
+
+    <update id="deleteTrTradeAnnouncementByAnnouncementIds" parameterType="String">
+        update tr_trade_announcement set del_flag = '2' where announcement_id in
+        <foreach item="announcementId" collection="array" open="(" separator="," close=")">
+            #{announcementId}
+        </foreach>
+    </update>
+    <!-- 发布公告 -->
+    <update id="publishAnnouncement">
+        update tr_trade_announcement
+        set publish_status = '1',
+            publish_time = now(),
+            update_time = now(),
+            update_by = #{updateBy,jdbcType=VARCHAR}
+        where announcement_id = #{announcementId}
+          and publish_status = '0'  -- 只能发布草稿状态的公告
+          and del_flag = '0'
+    </update>
+
+    <!-- 撤回公告 -->
+    <update id="retractAnnouncement">
+        update tr_trade_announcement
+        set publish_status = '0',
+            publish_time = null,
+            update_time = now(),
+            update_by = #{updateBy,jdbcType=VARCHAR}
+        where announcement_id = #{announcementId}
+          and publish_status = '1'  -- 只能撤回已发布的公告
+          and del_flag = '0'
+    </update>
+</mapper>

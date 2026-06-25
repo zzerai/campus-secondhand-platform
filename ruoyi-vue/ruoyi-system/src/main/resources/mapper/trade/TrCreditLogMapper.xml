@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trade.mapper.TrCreditLogMapper">
+
+    <resultMap type="TrCreditLog" id="TrCreditLogResult">
+        <result property="logId"        column="log_id"        />
+        <result property="userId"       column="user_id"       />
+        <result property="changeType"   column="change_type"   />
+        <result property="changeValue"  column="change_value"  />
+        <result property="scoreBefore"  column="score_before"  />
+        <result property="scoreAfter"   column="score_after"   />
+        <result property="bizType"      column="biz_type"      />
+        <result property="bizId"        column="biz_id"        />
+        <result property="banUntil"     column="ban_until"     />
+        <result property="reason"       column="reason"        />
+        <result property="createBy"     column="create_by"     />
+        <result property="createTime"   column="create_time"   />
+        <result property="updateBy"     column="update_by"     />
+        <result property="updateTime"   column="update_time"   />
+        <result property="delFlag"      column="del_flag"      />
+        <result property="remark"       column="remark"        />
+    </resultMap>
+
+    <sql id="selectTrCreditLogVo">
+        select log_id, user_id, change_type, change_value, score_before, score_after,
+               biz_type, biz_id, ban_until, reason,
+               create_by, create_time, update_by, update_time, del_flag, remark
+        from tr_credit_log
+    </sql>
+
+    <select id="selectTrCreditLogList" parameterType="TrCreditLog" resultMap="TrCreditLogResult">
+        <include refid="selectTrCreditLogVo"/>
+        <where>
+            and del_flag = '0'
+            <if test="userId != null">and user_id = #{userId}</if>
+            <if test="changeType != null and changeType != ''">and change_type = #{changeType}</if>
+            <if test="bizType != null and bizType != ''">and biz_type = #{bizType}</if>
+        </where>
+        order by log_id desc
+    </select>
+
+    <insert id="insertTrCreditLog" parameterType="TrCreditLog" useGeneratedKeys="true" keyProperty="logId">
+        insert into tr_credit_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="changeType != null">change_type,</if>
+            <if test="changeValue != null">change_value,</if>
+            <if test="scoreBefore != null">score_before,</if>
+            <if test="scoreAfter != null">score_after,</if>
+            <if test="bizType != null">biz_type,</if>
+            <if test="bizId != null">biz_id,</if>
+            <if test="banUntil != null">ban_until,</if>
+            <if test="reason != null">reason,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="changeType != null">#{changeType},</if>
+            <if test="changeValue != null">#{changeValue},</if>
+            <if test="scoreBefore != null">#{scoreBefore},</if>
+            <if test="scoreAfter != null">#{scoreAfter},</if>
+            <if test="bizType != null">#{bizType},</if>
+            <if test="bizId != null">#{bizId},</if>
+            <if test="banUntil != null">#{banUntil},</if>
+            <if test="reason != null">#{reason},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <select id="countByEvent" resultType="int">
+        select count(1) from tr_credit_log
+        where user_id = #{userId} and biz_type = #{bizType} and biz_id = #{bizId}
+          and change_type = #{changeType} and del_flag = '0'
+    </select>
+
+    <select id="countAutoBanByUser" resultType="int">
+        select count(1) from tr_credit_log
+        where user_id = #{userId} and change_type = 'auto_ban' and del_flag = '0'
+    </select>
+
+    <select id="selectUserIdsToRelease" resultType="java.lang.Long">
+        select u.user_id
+        from tr_student_user u
+        where u.status = '1' and u.del_flag = '0'
+          and exists (
+              select 1 from tr_credit_log b
+              where b.user_id = u.user_id
+                and b.change_type = 'auto_ban'
+                and b.ban_until is not null
+                and b.ban_until &lt;= #{now}
+                and b.del_flag = '0'
+                and b.log_id = (
+                    select max(c.log_id) from tr_credit_log c
+                    where c.user_id = u.user_id
+                      and c.change_type in ('auto_ban', 'ban_release')
+                      and c.del_flag = '0'
+                )
+          )
+    </select>
+</mapper>

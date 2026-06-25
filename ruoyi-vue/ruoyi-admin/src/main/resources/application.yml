@@ -1,0 +1,221 @@
+# 项目相关配置
+ruoyi:
+  # 名称
+  name: RuoYi
+  # 版本
+  version: 3.9.2
+  # 版权年份
+  copyrightYear: 2026
+  # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
+  profile: D:/ruoyi/uploadPath
+  # 获取ip地址开关
+  addressEnabled: false
+  # 验证码类型 math 数字计算 char 字符验证
+  captchaType: math
+  # 文件存储后端：local（本地磁盘，默认）| aliyun-oss（阿里云 OSS）
+  storage:
+    type: ${STORAGE_TYPE:local}
+    aliyun:
+      endpoint: ${OSS_ENDPOINT:}
+      access-key-id: ${OSS_ACCESS_KEY_ID:}
+      access-key-secret: ${OSS_ACCESS_KEY_SECRET:}
+      bucket-name: ${OSS_BUCKET:}
+      # 可选：自定义 CDN/域名前缀，不填则使用 https://{bucket}.{endpoint}
+      url-prefix: ${OSS_URL_PREFIX:}
+  # 阿里云号码认证服务（dypnsapi）短信验证码：移动端注册 / 手机号登录
+  sms:
+    endpoint: dypnsapi.aliyuncs.com
+    access-key-id: ${ALIYUN_SMS_ACCESS_KEY_ID:}
+    access-key-secret: ${ALIYUN_SMS_ACCESS_KEY_SECRET:}
+    sign-name: ${ALIYUN_SMS_SIGN_NAME:}
+    scheme-name: ${ALIYUN_SMS_SCHEME_NAME:}
+    template-code-register: ${ALIYUN_SMS_TEMPLATE_CODE_REGISTER:}
+    template-code-login: ${ALIYUN_SMS_TEMPLATE_CODE_LOGIN:}
+    template-code-reset-password: ${ALIYUN_SMS_TEMPLATE_CODE_RESET_PASSWORD:}
+    template-code-change-phone: ${ALIYUN_SMS_TEMPLATE_CODE_CHANGE_PHONE:}
+    # 模板里除 ${code} 外的其他变量（JSON 字符串）。${code} 由阿里云 SendSmsVerifyCode 自动生成注入。
+    # 例：模板"您的验证码${code}，${min}分钟内有效" → '{"min":"5"}'；只含 ${code} 时填 '{}'。
+    template-param-register: ${ALIYUN_SMS_TEMPLATE_PARAM_REGISTER:{}}
+    template-param-login: ${ALIYUN_SMS_TEMPLATE_PARAM_LOGIN:{}}
+    template-param-reset-password: ${ALIYUN_SMS_TEMPLATE_PARAM_RESET_PASSWORD:{}}
+    template-param-change-phone: ${ALIYUN_SMS_TEMPLATE_PARAM_CHANGE_PHONE:{}}
+    # 验证码有效期（秒），阿里云允许 60-1800
+    valid-time-seconds: 300
+    # 同一手机号发送间隔（秒），阿里云允许 60-86400
+    interval-seconds: 60
+    # 验证码长度，阿里云允许 4-8
+    code-length: 6
+  # Alipay sandbox payment configuration. Secrets must come from .env or deployment environment variables.
+  alipay:
+    app-id: ${ALIPAY_APP_ID:}
+    merchant-private-key: ${ALIPAY_MERCHANT_PRIVATE_KEY:}
+    alipay-public-key: ${ALIPAY_PUBLIC_KEY:}
+    gateway-url: ${ALIPAY_GATEWAY_URL:https://openapi-sandbox.dl.alipaydev.com/gateway.do}
+    notify-url: ${ALIPAY_NOTIFY_URL:}
+    return-url: ${ALIPAY_RETURN_URL:}
+    charset: UTF-8
+    sign-type: RSA2
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # 连接数满后的排队数，默认为100
+    accept-count: 1000
+    threads:
+      # tomcat最大线程数，默认为200
+      max: 800
+      # Tomcat启动初始化的线程数，默认值10
+      min-spare: 100
+
+# 日志配置
+logging:
+  level:
+    com.ruoyi: debug
+    org.springframework: warn
+
+# 用户配置
+user:
+  password:
+    # 密码最大错误次数
+    maxRetryCount: 5
+    # 密码锁定时间（默认10分钟）
+    lockTime: 10
+
+# Spring配置
+spring:
+  # 资源信息
+  messages:
+    # 国际化资源文件路径
+    basename: i18n/messages
+  profiles:
+    active: druid
+  # 文件上传
+  servlet:
+    multipart:
+      # 单个文件大小（提升至 100MB 以支持后台上传移动端 APK，普通图片上传不受影响）
+      max-file-size: 100MB
+      # 设置总上传的文件大小
+      max-request-size: 100MB
+  # 服务模块
+  devtools:
+    restart:
+      # 热部署开关
+      enabled: true
+  data:
+    # redis 配置
+    redis:
+      # 地址
+      host: ${REDIS_HOST}
+      # 端口，默认为6379
+      port: ${REDIS_PORT}
+      # 数据库索引
+      database: ${REDIS_DATABASE}
+      # 密码
+      password: ${REDIS_PASSWORD}
+      # 连接超时时间
+      timeout: 10s
+      lettuce:
+        pool:
+          # 连接池中的最小空闲连接
+          min-idle: 0
+          # 连接池中的最大空闲连接
+          max-idle: 8
+          # 连接池的最大数据库连接数
+          max-active: 8
+          # 连接池最大阻塞等待时间（超时抛异常，避免 Redis 不可达时永久阻塞请求线程）
+          max-wait: 2000ms
+
+# LangChain4j DashScope（通义千问）AI 配置
+# 注意：DASHSCOPE_API_KEY 必须通过环境变量或 .env 注入，禁止硬编码到 yml（避免随 git 泄漏）。
+# 历史泄漏的 KEY（sk-ed12...）须在阿里云控制台禁用并重发。
+langchain4j:
+  community:
+    dashscope:
+      chat-model:
+        api-key: sk-ed12b02a027942a782af96ad2c5ee343
+        model-name: qwen-plus
+        max-retries: 1
+
+# token配置
+token:
+  # 令牌自定义标识
+  header: Authorization
+  # 令牌密钥
+  secret: abcdefghijklmnopqrstuvwxyz
+  # 令牌有效期（永久，10年）
+  expireTime: 5256000
+
+# MyBatis配置
+mybatis:
+  # 搜索指定包别名
+  typeAliasesPackage: com.ruoyi.**.domain
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  # 加载全局的配置文件
+  configLocation: classpath:mybatis/mybatis-config.xml
+
+# PageHelper分页插件
+pagehelper:
+  helperDialect: mysql
+  supportMethodsArguments: true
+  params: count=countSql
+
+# Springdoc配置
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  group-configs:
+    - group: 'app'
+      display-name: '移动端接口'
+      paths-to-match:
+        - '/app/**'
+      packages-to-scan: com.ruoyi.web.controller.app
+    - group: 'admin'
+      display-name: '管理端接口'
+      paths-to-match:
+        - '/trade/**'
+        - '/system/**'
+        - '/monitor/**'
+      packages-to-scan: com.ruoyi.web.controller
+    - group: 'all'
+      display-name: '全部接口'
+      paths-to-match: '/**'
+      packages-to-scan: com.ruoyi.web.controller
+
+# 防盗链配置
+referer:
+  # 防盗链开关
+  enabled: false
+  # 允许的域名列表
+  allowed-domains: localhost,127.0.0.1,ruoyi.vip,www.ruoyi.vip
+
+# 防止XSS攻击
+xss:
+  # 过滤开关
+  enabled: true
+  # 排除链接（多个用逗号分隔）
+  excludes: /system/notice
+  # 匹配链接
+  urlPatterns: /system/*,/monitor/*,/tool/*
+
+# 交易订单配置（闲鱼模式定时任务阈值）
+trade:
+  # 管理员学生用户ID，用于移动端"联系管理员"私信功能
+  admin-student-id: 1
+  order:
+    # 待支付超时自动取消（分钟）
+    pay-timeout-minutes: 5
+    # 待收货超时自动确认收货（天）
+    auto-confirm-days: 7
